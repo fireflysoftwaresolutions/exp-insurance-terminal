@@ -17,52 +17,54 @@
 
 package io.fireflysoftware.experience.insurance.terminal;
 
-import org.springframework.web.reactive.function.client.WebClient;
+import io.fireflysoftware.security.center.sdk.api.IdentityControllerApi;
+import io.fireflysoftware.security.center.sdk.model.IdentityRequest;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
- * Posts {@code POST /api/v1/identity/subjects}. A 404 is an unknown subject.
+ * Resolves a staff subject through domain-core-security-center. A 404 is an unknown subject.
  */
 public final class HttpIdentityAdapter implements IdentityPort {
 
-    private final WebClient webClient;
+    private final IdentityControllerApi api;
 
-    public HttpIdentityAdapter(WebClient webClient) {
-        this.webClient = webClient;
+    public HttpIdentityAdapter(IdentityControllerApi api) {
+        this.api = api;
+    }
+
+    public static HttpIdentityAdapter at(String baseUrl) {
+        return new HttpIdentityAdapter(new IdentityControllerApi(HttpAccessAdapter.client(baseUrl)));
     }
 
     @Override
     public Mono<SubjectRef> authenticate(String username) {
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("username", username == null ? "" : username);
-        return post(body);
+        return post(new IdentityRequest().username(username == null ? "" : username));
     }
 
     @Override
     public Mono<SubjectRef> resolve(String actorId) {
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("actorId", actorId == null ? "" : actorId);
-        return post(body);
+        return post(new IdentityRequest().actorId(actorId == null ? "" : actorId));
     }
 
-    private Mono<SubjectRef> post(Map<String, String> body) {
-        return webClient.post()
-                .uri("/api/v1/identity/subjects")
-                .bodyValue(body)
-                .exchangeToMono(response -> {
-                    if (response.statusCode().value() == 404) {
-                        return Mono.empty();
-                    }
-                    if (response.statusCode().isError()) {
-                        return response.createException().flatMap(Mono::error);
-                    }
-                    return JsonResponses.body(response)
-                            .map(node -> new SubjectRef(UUID.fromString(node.path("actorId").asText()),
-                                    node.path("provider").asText("")));
-                });
+    private Mono<SubjectRef> post(IdentityRequest request) {
+        return api.resolveSubject(request)
+                .map(subject -> new SubjectRef(
+                        UUID.fromString(subject.getActorId()),
+                        subject.getProvider() == null ? "" : subject.getProvider().getValue()))
+                .onErrorResume(error -> missing(error) ? Mono.empty() : Mono.error(error));
+    }
+
+    private static boolean missing(Throwable error) {
+        Throwable current = error;
+        while (current != null) {
+            if (current instanceof WebClientResponseException http && http.getStatusCode().value() == 404) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 }

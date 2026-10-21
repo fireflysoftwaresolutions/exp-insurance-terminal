@@ -54,8 +54,7 @@ class StaffTerminalTest {
 
     @Test
     void customerCanReadTheSamplePolicyAndStillCannotAdminister() {
-        AccessPort access = new HttpAccessAdapter(org.springframework.web.reactive.function.client.WebClient.builder()
-                .baseUrl(security.baseUrl).build());
+        AccessPort access = HttpAccessAdapter.at(security.baseUrl);
         AccessOutcome read = access.check(new AccessCheck(CUSTOMER, "READ", "POLICY",
                 InsuranceArea.POLICY.primaryId().toString())).block();
         assertTrue(read.allowed());

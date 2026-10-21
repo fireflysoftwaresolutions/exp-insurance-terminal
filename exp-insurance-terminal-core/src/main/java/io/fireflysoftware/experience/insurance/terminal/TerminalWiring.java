@@ -41,24 +41,20 @@ import java.util.Map;
 public class TerminalWiring {
 
     @Bean
-    public WebClient securityCenterWebClient(
-            @Value("${api-configuration.domain-platform.security-center.base-path:http://localhost:8085}") String basePath) {
-        return WebClient.builder().baseUrl(basePath).build();
-    }
-
-    @Bean
     public WebClient terminalWebClient() {
         return WebClient.builder().build();
     }
 
     @Bean
-    public IdentityPort identityPort(WebClient securityCenterWebClient) {
-        return new HttpIdentityAdapter(securityCenterWebClient);
+    public IdentityPort identityPort(
+            @Value("${api-configuration.domain-platform.security-center.base-path:http://localhost:8085}") String basePath) {
+        return HttpIdentityAdapter.at(basePath);
     }
 
     @Bean
-    public AccessPort accessPort(WebClient securityCenterWebClient) {
-        return new HttpAccessAdapter(securityCenterWebClient);
+    public AccessPort accessPort(
+            @Value("${api-configuration.domain-platform.security-center.base-path:http://localhost:8085}") String basePath) {
+        return HttpAccessAdapter.at(basePath);
     }
 
     @Bean

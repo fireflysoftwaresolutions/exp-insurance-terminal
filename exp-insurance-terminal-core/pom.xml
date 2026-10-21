@@ -38,6 +38,11 @@
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-core-security-center-sdk</artifactId>
+            <version>26.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-security-center-core</artifactId>
             <version>26.10.4</version>
             <scope>test</scope>

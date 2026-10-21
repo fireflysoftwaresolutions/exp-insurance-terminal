@@ -17,17 +17,14 @@
 
 package io.fireflysoftware.experience.insurance.terminal;
 
-import org.springframework.web.reactive.function.client.WebClient;
-
 public final class TerminalFixture {
 
     private TerminalFixture() {
     }
 
     public static StaffTerminal insurance(String securityCenterBaseUrl) {
-        WebClient security = WebClient.builder().baseUrl(securityCenterBaseUrl).build();
-        IdentityPort identity = new HttpIdentityAdapter(security);
-        AccessPort access = new HttpAccessAdapter(security);
+        IdentityPort identity = HttpIdentityAdapter.at(securityCenterBaseUrl);
+        AccessPort access = HttpAccessAdapter.at(securityCenterBaseUrl);
         AuditPort audit = new InMemoryAuditLog();
         ConfigurationPort configuration = new SandboxConfigurationStore(
                 InsuranceSamples.properties(), InsuranceSamples.currencies(), InsuranceSamples.countries());
