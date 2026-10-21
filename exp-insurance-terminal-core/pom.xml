@@ -43,6 +43,26 @@
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-insurance-policies-sdk</artifactId>
+            <version>26.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-insurance-claims-sdk</artifactId>
+            <version>26.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-insurance-underwriting-sdk</artifactId>
+            <version>26.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>core-common-distributor-mgmt-sdk</artifactId>
+            <version>26.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-security-center-core</artifactId>
             <version>26.10.4</version>
             <scope>test</scope>

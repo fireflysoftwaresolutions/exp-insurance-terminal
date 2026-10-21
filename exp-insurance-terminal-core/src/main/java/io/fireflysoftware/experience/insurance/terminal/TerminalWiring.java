@@ -23,7 +23,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
@@ -39,11 +38,6 @@ import java.util.Map;
 @Configuration
 @EnableConfigurationProperties(TerminalWiring.TerminalLocations.class)
 public class TerminalWiring {
-
-    @Bean
-    public WebClient terminalWebClient() {
-        return WebClient.builder().build();
-    }
 
     @Bean
     public IdentityPort identityPort(
@@ -98,14 +92,14 @@ public class TerminalWiring {
 
     @Bean
     @ConditionalOnProperty(prefix = "firefly.terminal", name = "adapter", havingValue = "domain")
-    public StaffRecordPort domainRecordPort(WebClient terminalWebClient, ConfigurationPort configurationPort, TerminalLocations locations) {
-        return new DomainRecordClient(terminalWebClient, configurationPort, locations.getDomains());
+    public StaffRecordPort domainRecordPort(ConfigurationPort configurationPort, TerminalLocations locations) {
+        return new DomainRecordClient(configurationPort, locations.getDomains());
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "firefly.terminal", name = "adapter", havingValue = "domain")
-    public DistributorPort domainDistributorPort(WebClient terminalWebClient, ConfigurationPort configurationPort, TerminalLocations locations) {
-        return new DomainDistributorClient(terminalWebClient, configurationPort, locations.getDistributorBaseUrl(), InsuranceArea.POLICY.channelKey());
+    public DistributorPort domainDistributorPort(ConfigurationPort configurationPort, TerminalLocations locations) {
+        return new DomainDistributorClient(configurationPort, locations.getDistributorBaseUrl(), InsuranceArea.POLICY.channelKey());
     }
 
     @Bean

@@ -18,12 +18,21 @@
 package io.fireflysoftware.experience.insurance.terminal;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.web.reactive.function.client.WebClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.fireflysoftware.core.distributor.sdk.api.DistributorAgenciesApi;
+import io.fireflysoftware.core.distributor.sdk.api.DistributorAgentsApi;
+import io.fireflysoftware.core.distributor.sdk.api.DistributorApi;
+import io.fireflysoftware.core.distributor.sdk.api.DistributorAuditLogApi;
+import io.fireflysoftware.core.distributor.sdk.invoker.ApiClient;
+import io.fireflysoftware.core.distributor.sdk.model.DistributorAuditLogDTO;
+import io.fireflysoftware.core.distributor.sdk.model.FilterRequestDistributorAgencyDTO;
+import io.fireflysoftware.core.distributor.sdk.model.FilterRequestDistributorAgentDTO;
+import io.fireflysoftware.core.distributor.sdk.model.FilterRequestDistributorDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -32,54 +41,57 @@ import java.util.UUID;
 
 /**
  * Lists distributors, agencies, and agents from core-common-distributor-mgmt and records
- * an attachment in the distributor audit log. Existing distributor tables are left in place.
+ * an attachment in the distributor audit log.
  */
 public final class DomainDistributorClient implements DistributorPort {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Set<String> ROLES = Set.of("BROKER", "AGENCY", "COLLABORATOR");
 
-    private final WebClient webClient;
+    private final DistributorApi distributors;
+    private final DistributorAgenciesApi agencies;
+    private final DistributorAgentsApi agents;
+    private final DistributorAuditLogApi audit;
     private final ConfigurationPort configuration;
-    private final String distributorBaseUrl;
     private final String channelKey;
 
-    public DomainDistributorClient(WebClient webClient, ConfigurationPort configuration, String distributorBaseUrl, String channelKey) {
-        this.webClient = webClient;
+    public DomainDistributorClient(ConfigurationPort configuration, String distributorBaseUrl, String channelKey) {
+        ApiClient client = new ApiClient();
+        client.setBasePath(trim(distributorBaseUrl));
+        this.distributors = new DistributorApi(client);
+        this.agencies = new DistributorAgenciesApi(client);
+        this.agents = new DistributorAgentsApi(client);
+        this.audit = new DistributorAuditLogApi(client);
         this.configuration = configuration;
-        this.distributorBaseUrl = trim(distributorBaseUrl);
         this.channelKey = channelKey;
     }
 
     @Override
     public Flux<DistributorView> list() {
-        return configuration.getRequired(channelKey).flatMapMany(channel -> webClient.post()
-                .uri(distributorBaseUrl + "/api/v1/distributors/filter")
-                .bodyValue(Map.of())
-                .exchangeToMono(JsonResponses::body)
-                .flatMapMany(body -> Flux.fromIterable(items(body)))
+        return configuration.getRequired(channelKey).flatMapMany(channel -> distributors
+                .filterDistributorsWithResponseSpec(new FilterRequestDistributorDTO(), key())
+                .bodyToMono(String.class)
+                .flatMapMany(raw -> Flux.fromIterable(items(read(raw))))
                 .concatMap(item -> toView(item, channel)));
     }
 
     @Override
     public Mono<DistributorView> link(DistributorLink link) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("distributorId", link.distributorId().toString());
-        body.put("action", "UPDATED");
-        body.put("entity", "STAFF_RECORD");
-        body.put("entityId", link.recordId().toString());
-        body.put("auditMetadata", "party=" + link.customerPartyId()
+        DistributorAuditLogDTO entry = new DistributorAuditLogDTO();
+        entry.setDistributorId(link.distributorId());
+        entry.setAction(DistributorAuditLogDTO.ActionEnum.UPDATED);
+        entry.setEntity("STAFF_RECORD");
+        entry.setEntityId(link.recordId().toString());
+        entry.setAuditMetadata("party=" + link.customerPartyId()
                 + ";channel=" + link.channel()
                 + ";collaborator=" + link.collaboratorId()
                 + ";actor=" + link.employeeId()
                 + ";area=" + link.area());
-        body.put("userId", link.employeeId().toString());
-        body.put("auditTimestamp", LocalDateTime.now().toString());
-        return webClient.post()
-                .uri(distributorBaseUrl + "/api/v1/distributors/" + link.distributorId() + "/audit-logs")
-                .bodyValue(body)
-                .exchangeToMono(JsonResponses::body)
-                .then(Mono.just(new DistributorView(link.distributorId(), "", "DISTRIBUTOR", link.customerPartyId(),
-                        link.channel(), null, link.collaboratorId())));
+        entry.setUserId(link.employeeId());
+        entry.setAuditTimestamp(LocalDateTime.now().withNano(0));
+        return audit.createDistributorAuditLog(link.distributorId(), entry, key())
+                .thenReturn(new DistributorView(link.distributorId(), "", "DISTRIBUTOR", link.customerPartyId(),
+                        link.channel(), null, link.collaboratorId()));
     }
 
     private Mono<DistributorView> toView(JsonNode item, String channel) {
@@ -87,31 +99,42 @@ public final class DomainDistributorClient implements DistributorPort {
         String externalCode = item.path("externalCode").asText("");
         String role = ROLES.contains(externalCode.toUpperCase(Locale.ROOT)) ? externalCode.toUpperCase(Locale.ROOT) : "DISTRIBUTOR";
         UUID partyId = uuidOrNull(item.path("partyId").asText(""));
-        return firstId(distributorBaseUrl + "/api/v1/distributors/" + id + "/agencies/filter")
-                .zipWith(firstId(distributorBaseUrl + "/api/v1/distributors/" + id + "/agents/filter"))
+        return firstId(agencies.filter6(id, new FilterRequestDistributorAgencyDTO(), key()))
+                .zipWith(firstId(agents.filter4(id, new FilterRequestDistributorAgentDTO(), key())))
                 .map(pair -> new DistributorView(id, item.path("name").asText(""), role, partyId, channel,
                         pair.getT1().orElse(null), pair.getT2().orElse(null)));
     }
 
-    private Mono<Optional<UUID>> firstId(String uri) {
-        return webClient.post()
-                .uri(uri)
-                .bodyValue(Map.of())
-                .exchangeToMono(JsonResponses::body)
-                .map(body -> {
-                    for (JsonNode node : items(body)) {
-                        String id = node.path("id").asText("");
-                        if (!id.isBlank()) {
-                            return Optional.of(UUID.fromString(id));
-                        }
-                    }
-                    return Optional.<UUID>empty();
-                });
+    private static Mono<Optional<UUID>> firstId(Mono<io.fireflysoftware.core.distributor.sdk.model.PaginationResponse> page) {
+        return page.map(response -> firstId(response.getContent())).defaultIfEmpty(Optional.empty());
+    }
+
+    private static Optional<UUID> firstId(List<Object> content) {
+        if (content == null) {
+            return Optional.empty();
+        }
+        for (Object item : content) {
+            String id = null;
+            if (item instanceof Map<?, ?> map && map.get("id") != null) {
+                id = map.get("id").toString();
+            } else if (item != null) {
+                try {
+                    Object value = item.getClass().getMethod("getId").invoke(item);
+                    id = value == null ? null : value.toString();
+                } catch (ReflectiveOperationException ignored) {
+                    id = null;
+                }
+            }
+            if (id != null && !id.isBlank()) {
+                return Optional.of(UUID.fromString(id));
+            }
+        }
+        return Optional.empty();
     }
 
     private static Iterable<JsonNode> items(JsonNode body) {
         if (body == null || body.isNull()) {
-            return java.util.List.of();
+            return List.of();
         }
         if (body.isArray()) {
             return body;
@@ -121,7 +144,15 @@ public final class DomainDistributorClient implements DistributorPort {
                 return body.path(field);
             }
         }
-        return java.util.List.of();
+        return List.of();
+    }
+
+    private static JsonNode read(String raw) {
+        try {
+            return raw == null || raw.isBlank() ? MAPPER.createObjectNode() : MAPPER.readTree(raw);
+        } catch (Exception exception) {
+            throw new IllegalStateException("DOMAIN_RESPONSE_UNREADABLE");
+        }
     }
 
     private static UUID uuidOrNull(String text) {
@@ -129,6 +160,10 @@ public final class DomainDistributorClient implements DistributorPort {
             return null;
         }
         return UUID.fromString(text);
+    }
+
+    private static String key() {
+        return UUID.randomUUID().toString();
     }
 
     private static String trim(String url) {
