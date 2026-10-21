@@ -7,13 +7,13 @@
     <parent>
         <groupId>io.fireflysoftware</groupId>
         <artifactId>firefly-parent</artifactId>
-        <version>26.10.3</version>
+        <version>26.10.4</version>
         <relativePath/>
     </parent>
 
     <artifactId>exp-insurance-terminal</artifactId>
     <name>exp-insurance-terminal</name>
-    <version>26.10.3</version>
+    <version>26.10.4</version>
     <packaging>pom</packaging>
     <description>Staff terminal for insurance administration</description>
 
@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>io.fireflysoftware</groupId>
                 <artifactId>firefly-bom</artifactId>
-                <version>26.10.3</version>
+                <version>26.10.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
