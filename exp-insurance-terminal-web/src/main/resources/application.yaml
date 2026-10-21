@@ -1,0 +1,25 @@
+server:
+  port: ${SERVER_PORT:8121}
+
+spring:
+  application:
+    name: exp-insurance-terminal
+  threads:
+    virtual:
+      enabled: true
+
+api-configuration:
+  domain-platform:
+    security-center:
+      base-path: ${SECURITY_CENTER_URL:http://localhost:8085}
+
+firefly:
+  terminal:
+    adapter: ${FIREFLY_TERMINAL_ADAPTER:sandbox}
+    configuration-base-url: ${CONFIG_MGMT_URL:http://localhost:8088}
+    master-data-base-url: ${MASTER_DATA_URL:http://localhost:8089}
+    distributor-base-url: ${DISTRIBUTOR_MGMT_URL:http://localhost:8070}
+    domains:
+      policies: ${INSURANCE_POLICIES_URL:http://localhost:8071}
+      claims: ${INSURANCE_CLAIMS_URL:http://localhost:8072}
+      submissions: ${INSURANCE_UNDERWRITING_URL:http://localhost:8073}
