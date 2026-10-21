@@ -25,6 +25,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
+import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
+import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -87,8 +91,13 @@ public class TerminalWiring {
 
     @Bean
     @ConditionalOnProperty(prefix = "firefly.terminal", name = "adapter", havingValue = "domain")
-    public ConfigurationPort domainConfigurationPort(WebClient terminalWebClient, TerminalLocations locations) {
-        return new DomainConfigurationClient(terminalWebClient, locations.getConfigurationBaseUrl(), locations.getMasterDataBaseUrl());
+    public ConfigurationPort domainConfigurationPort(TerminalLocations locations) {
+        ApiClient configuration = new ApiClient();
+        configuration.setBasePath(locations.getConfigurationBaseUrl());
+        io.fireflysoftware.domain.referencedata.sdk.invoker.ApiClient masters =
+                new io.fireflysoftware.domain.referencedata.sdk.invoker.ApiClient();
+        masters.setBasePath(locations.getMasterDataBaseUrl());
+        return new DomainConfigurationClient(new EnvironmentConfigApi(configuration), new ReferenceMastersApi(masters));
     }
 
     @Bean
