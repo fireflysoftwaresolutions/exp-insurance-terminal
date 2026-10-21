@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
-import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
+import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -87,7 +87,7 @@ public class TerminalWiring {
         io.fireflysoftware.domain.referencedata.sdk.invoker.ApiClient masters =
                 new io.fireflysoftware.domain.referencedata.sdk.invoker.ApiClient();
         masters.setBasePath(locations.getMasterDataBaseUrl());
-        return new DomainConfigurationClient(new EnvironmentConfigApi(configuration), new ReferenceMastersApi(masters));
+        return new DomainConfigurationClient(new EnvironmentConfigApi(configuration), new MastersApi(masters));
     }
 
     @Bean

@@ -18,10 +18,13 @@
 package io.fireflysoftware.experience.insurance.terminal;
 
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
-import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
+import io.fireflysoftware.domain.configuration.sdk.model.EnvironmentConfig;
+import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,27 +34,48 @@ import java.util.UUID;
 public final class DomainConfigurationClient implements ConfigurationPort {
 
     private final EnvironmentConfigApi configuration;
-    private final ReferenceMastersApi masters;
+    private final MastersApi masters;
 
-    public DomainConfigurationClient(EnvironmentConfigApi configuration, ReferenceMastersApi masters) {
+    public DomainConfigurationClient(EnvironmentConfigApi configuration, MastersApi masters) {
         this.configuration = configuration;
         this.masters = masters;
     }
 
     @Override
     public Mono<String> getRequired(String key) {
-        return denied(configuration.getRequired(key));
+        return denied(configuration.filterConfigs(0, 200, Map.of())
+                .flatMap(page -> {
+                    List<EnvironmentConfig> rows = page.getContent() == null ? List.of() : page.getContent();
+                    return rows.stream()
+                            .filter(row -> key.equals(row.getConfigKey()))
+                            .map(EnvironmentConfig::getConfigValue)
+                            .filter(value -> value != null && !value.isBlank())
+                            .findFirst()
+                            .map(Mono::just)
+                            .orElseGet(() -> Mono.error(new IllegalStateException("PROPERTY_NOT_SET")));
+                }));
     }
 
     @Override
     public Mono<String> put(String key, String value, UUID employeeId) {
-        return denied(configuration.put(key, value, employeeId));
+        EnvironmentConfig body = new EnvironmentConfig()
+                .environmentName("sandbox")
+                .configKey(key)
+                .configValue(value)
+                .configType("STRING")
+                .isSecret(false)
+                .description("Staff terminal property set by " + employeeId);
+        return denied(configuration.createConfig(body)
+                .map(saved -> {
+                    String stored = saved.getConfigValue();
+                    return stored == null || stored.isBlank() ? value : stored;
+                }));
     }
 
     @Override
     public Flux<MasterRecord> masters(String type) {
-        return masters.list(type)
-                .map(row -> new MasterRecord(row.type(), row.id(), row.code(), row.name()))
+        return masters.listMaster(type)
+                .map(row -> new MasterRecord(type, row.getId(), row.getCode(), row.getLabel() == null ? "" : row.getLabel()))
                 .onErrorMap(IllegalStateException.class, exception -> new TerminalDeniedException(exception.getMessage()));
     }
 

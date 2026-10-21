@@ -1,0 +1,286 @@
+openapi: 3.0.3
+info:
+  title: Insurance staff terminal
+  version: 26.10.4
+paths:
+  /api/v1/staff/sessions:
+    post:
+      tags: [Staff Terminal]
+      operationId: signIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        "200":
+          description: Staff session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffSession"
+  /api/v1/staff/records/{area}:
+    get:
+      tags: [Staff Terminal]
+      operationId: listRecords
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - name: area
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Records in the area
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffRecord"
+  /api/v1/staff/records/{area}/{recordId}:
+    get:
+      tags: [Staff Terminal]
+      operationId: openRecord
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Area"
+        - $ref: "#/components/parameters/RecordId"
+      responses:
+        "200":
+          description: One record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+    put:
+      tags: [Staff Terminal]
+      operationId: updateRecord
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Area"
+        - $ref: "#/components/parameters/RecordId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+      responses:
+        "200":
+          description: Updated record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+  /api/v1/staff/records/{area}/{recordId}/close:
+    post:
+      tags: [Staff Terminal]
+      operationId: closeRecord
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Area"
+        - $ref: "#/components/parameters/RecordId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+      responses:
+        "200":
+          description: Closed record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+  /api/v1/staff/records/{area}/{recordId}/remove:
+    post:
+      tags: [Staff Terminal]
+      operationId: removeDraft
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Area"
+        - $ref: "#/components/parameters/RecordId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+      responses:
+        "200":
+          description: Draft removed
+  /api/v1/staff/records/{area}/{recordId}/decide:
+    post:
+      tags: [Staff Terminal]
+      operationId: decideRecord
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Area"
+        - $ref: "#/components/parameters/RecordId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+      responses:
+        "200":
+          description: Decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+  /api/v1/staff/records/{area}/{recordId}/distributor:
+    post:
+      tags: [Staff Terminal]
+      operationId: attachDistributor
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/Area"
+        - $ref: "#/components/parameters/RecordId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+      responses:
+        "200":
+          description: Distributor attached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+  /api/v1/staff/distributors:
+    get:
+      tags: [Staff Terminal]
+      operationId: listDistributors
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Distributors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DistributorView"
+  /api/v1/staff/configuration/{key}:
+    put:
+      tags: [Staff Terminal]
+      operationId: putProperty
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - name: key
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PropertyBody"
+      responses:
+        "200":
+          description: Stored value
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/v1/staff/masters/{type}:
+    get:
+      tags: [Staff Terminal]
+      operationId: listMasters
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - name: type
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Master rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MasterRecord"
+components:
+  parameters:
+    ActorId:
+      name: X-Actor-Id
+      in: header
+      required: true
+      schema: {type: string, format: uuid}
+    Area:
+      name: area
+      in: path
+      required: true
+      schema: {type: string}
+    RecordId:
+      name: recordId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+  schemas:
+    SignInRequest:
+      type: object
+      properties:
+        username:
+          type: string
+    StaffSession:
+      type: object
+      properties:
+        actorId:
+          type: string
+          format: uuid
+        provider:
+          type: string
+    StaffRecord:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        area: {type: string}
+        customerPartyId: {type: string, format: uuid}
+        actorId: {type: string, format: uuid}
+        status: {type: string}
+        reference: {type: string}
+        distributorId: {type: string, format: uuid}
+        note: {type: string}
+    RecordBody:
+      type: object
+      properties:
+        customerPartyId: {type: string, format: uuid}
+        reason: {type: string}
+        note: {type: string}
+        distributorId: {type: string, format: uuid}
+        collaboratorId: {type: string, format: uuid}
+        channel: {type: string}
+        decision: {type: string}
+    DistributorView:
+      type: object
+      properties:
+        distributorId: {type: string, format: uuid}
+        name: {type: string}
+        role: {type: string}
+        partyId: {type: string, format: uuid}
+        channel: {type: string}
+        agencyId: {type: string, format: uuid}
+        collaboratorId: {type: string, format: uuid}
+    MasterRecord:
+      type: object
+      properties:
+        type: {type: string}
+        id: {type: string, format: uuid}
+        code: {type: string}
+        name: {type: string}
+    PropertyBody:
+      type: object
+      properties:
+        value: {type: string}

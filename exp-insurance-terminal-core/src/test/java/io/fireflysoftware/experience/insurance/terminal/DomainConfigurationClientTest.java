@@ -17,7 +17,10 @@
 package io.fireflysoftware.experience.insurance.terminal;
 
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
-import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
+import io.fireflysoftware.domain.configuration.sdk.model.EnvironmentConfig;
+import io.fireflysoftware.domain.configuration.sdk.model.EnvironmentConfigPage;
+import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
+import io.fireflysoftware.domain.referencedata.sdk.model.CatalogEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,9 +28,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,25 +43,28 @@ class DomainConfigurationClientTest {
     @Mock
     private EnvironmentConfigApi configuration;
     @Mock
-    private ReferenceMastersApi masters;
+    private MastersApi masters;
 
     @Test
     void readsAndWritesConfigurationAndReferenceDataThroughTheDomainSdks() {
         DomainConfigurationClient client = new DomainConfigurationClient(configuration, masters);
         UUID employeeId = UUID.randomUUID();
         UUID countryId = UUID.randomUUID();
-        when(configuration.getRequired("insurance.catalog")).thenReturn(Mono.just("sandbox"));
-        when(configuration.put("insurance.catalog", "live", employeeId)).thenReturn(Mono.just("live"));
-        when(masters.list("COUNTRY")).thenReturn(Flux.just(
-                new ReferenceMastersApi.MasterRow("COUNTRY", countryId, "ES", "Spain")));
+        when(configuration.filterConfigs(eq(0), eq(200), any())).thenReturn(Mono.just(
+                new EnvironmentConfigPage().addContentItem(
+                        new EnvironmentConfig().configKey("insurance.catalog").configValue("sandbox"))));
+        when(configuration.createConfig(any())).thenReturn(Mono.just(new EnvironmentConfig().configValue("live")));
+        when(masters.listMaster("COUNTRY")).thenReturn(Flux.just(
+                new CatalogEntry().id(countryId).code("ES").label("Spain")));
 
         assertThat(client.getRequired("insurance.catalog").block()).isEqualTo("sandbox");
         assertThat(client.put("insurance.catalog", "live", employeeId).block()).isEqualTo("live");
         MasterRecord row = client.masters("COUNTRY").blockFirst();
 
         assertThat(row.code()).isEqualTo("ES");
-        verify(configuration).getRequired("insurance.catalog");
-        verify(configuration).put("insurance.catalog", "live", employeeId);
-        verify(masters).list("COUNTRY");
+        assertThat(row.name()).isEqualTo("Spain");
+        verify(configuration).filterConfigs(eq(0), eq(200), eq(Map.of()));
+        verify(configuration).createConfig(any());
+        verify(masters).listMaster("COUNTRY");
     }
 }
