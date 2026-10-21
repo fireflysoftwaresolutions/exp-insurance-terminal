@@ -17,7 +17,7 @@ Staff terminal for insurance administration. An employee signs in. A customer su
 
 Repository: [https://github.com/fireflysoftwaresolutions/exp-insurance-terminal](https://github.com/fireflysoftwaresolutions/exp-insurance-terminal)
 
-Version 26.10.4.
+Version 26.10.5.
 
 ## Employee and customer
 
