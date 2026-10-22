@@ -26,6 +26,9 @@ import org.springframework.context.annotation.Configuration;
 
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.AgencyApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.AgentApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.DistributorQueryApi;
 import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
 
 import java.util.LinkedHashMap;
@@ -99,7 +102,14 @@ public class TerminalWiring {
     @Bean
     @ConditionalOnProperty(prefix = "firefly.terminal", name = "adapter", havingValue = "domain")
     public DistributorPort domainDistributorPort(ConfigurationPort configurationPort, TerminalLocations locations) {
-        return new DomainDistributorClient(configurationPort, locations.getDistributorBaseUrl(), InsuranceArea.POLICY.channelKey());
+        io.fireflysoftware.domain.distributor.branding.sdk.invoker.ApiClient distributors =
+                new io.fireflysoftware.domain.distributor.branding.sdk.invoker.ApiClient();
+        distributors.setBasePath(trim(locations.getDistributorBaseUrl()));
+        return new DomainDistributorClient(configurationPort,
+                new DistributorQueryApi(distributors),
+                new AgencyApi(distributors),
+                new AgentApi(distributors),
+                InsuranceArea.POLICY.channelKey());
     }
 
     @Bean
@@ -157,5 +167,12 @@ public class TerminalWiring {
         public void setDomains(Map<String, String> domains) {
             this.domains = domains;
         }
+    }
+
+    private static String trim(String url) {
+        if (url == null || url.isBlank()) {
+            throw new TerminalDeniedException("PROPERTY_NOT_SET");
+        }
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 }
