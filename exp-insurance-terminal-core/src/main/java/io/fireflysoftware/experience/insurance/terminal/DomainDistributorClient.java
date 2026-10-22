@@ -38,6 +38,7 @@ import java.util.UUID;
 /**
  * Lists distributors, agencies, and agents through domain-distributor-branding
  * and records an attachment in that domain's audit log.
+ * The view is read back from the domain after the audit row is stored.
  */
 public final class DomainDistributorClient implements DistributorPort {
 
@@ -90,8 +91,9 @@ public final class DomainDistributorClient implements DistributorPort {
                     if (id == null || id.toString().isBlank()) {
                         return Mono.error(new IllegalStateException("Distributor audit log was not recorded"));
                     }
-                    return Mono.just(new DistributorView(link.distributorId(), "", "DISTRIBUTOR", link.customerPartyId(),
-                            link.channel(), null, link.collaboratorId()));
+                    return configuration.getRequired(channelKey)
+                            .flatMap(channel -> distributors.getDistributorProfile(link.distributorId(), key())
+                                    .flatMap(profile -> toView(profile, channel)));
                 });
     }
 
