@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.fireflysoftware</groupId>
         <artifactId>exp-insurance-terminal</artifactId>
-        <version>26.10.5</version>
+        <version>26.10.6</version>
     </parent>
 
     <artifactId>exp-insurance-terminal-web</artifactId>

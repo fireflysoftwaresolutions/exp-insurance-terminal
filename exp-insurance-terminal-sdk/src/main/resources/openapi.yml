@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Insurance staff terminal
-  version: 26.10.5
+  version: 26.10.6
 paths:
   /api/v1/staff/sessions:
     post:
