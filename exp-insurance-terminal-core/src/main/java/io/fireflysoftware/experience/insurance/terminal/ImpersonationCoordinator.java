@@ -41,12 +41,16 @@ public final class ImpersonationCoordinator implements ImpersonationPort {
             return Mono.error(new TerminalDeniedException("REQUEST_INCOMPLETE"));
         }
         AccessCheck check = new AccessCheck(employeeId, "IMPERSONATE", "PARTY", customerPartyId.toString());
-        return accessPort.check(check).flatMap(outcome -> {
+        return accessPort.check(check)
+                .switchIfEmpty(Mono.error(new TerminalDeniedException("ACCESS_DECISION_MISSING")))
+                .flatMap(outcome -> {
             if (!outcome.allowed()) {
                 return Mono.error(new TerminalDeniedException(outcome.reasonCode()));
             }
             AuditEntry entry = new AuditEntry(UUID.randomUUID(), employeeId, customerPartyId, reason, action, area, recordId);
-            return auditPort.append(entry);
+            return auditPort.append(entry)
+                    .filter(entry::equals)
+                    .switchIfEmpty(Mono.error(new TerminalDeniedException("IMPERSONATION_AUDIT_NOT_CONFIRMED")));
         });
     }
 }
