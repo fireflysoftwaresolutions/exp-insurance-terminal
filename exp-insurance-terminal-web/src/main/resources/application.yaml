@@ -14,6 +14,9 @@ api-configuration:
       base-path: ${SECURITY_CENTER_URL:http://localhost:8085}
 
 firefly:
+  security:
+    resource-server:
+      strict-policy: true
   terminal:
     adapter: ${FIREFLY_TERMINAL_ADAPTER:sandbox}
     configuration-base-url: ${CONFIG_MGMT_URL:http://localhost:8088}

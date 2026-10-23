@@ -1,0 +1,1430 @@
+{
+  "adapters": [
+    {
+      "implements": "AccessPort",
+      "memory": false,
+      "methods": [
+        "at",
+        "check"
+      ],
+      "name": "HttpAccessAdapter",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/HttpAccessAdapter.java",
+      "synthetic": false
+    },
+    {
+      "implements": "IdentityPort",
+      "memory": false,
+      "methods": [
+        "at",
+        "authenticate",
+        "resolve"
+      ],
+      "name": "HttpIdentityAdapter",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/HttpIdentityAdapter.java",
+      "synthetic": false
+    },
+    {
+      "implements": "ConfigurationPort",
+      "memory": true,
+      "methods": [
+        "getRequired",
+        "put",
+        "masters"
+      ],
+      "name": "SandboxConfigurationStore",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxConfigurationStore.java",
+      "synthetic": true
+    },
+    {
+      "implements": "DistributorPort",
+      "memory": true,
+      "methods": [
+        "list",
+        "link",
+        "links"
+      ],
+      "name": "SandboxDistributorDirectory",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxDistributorDirectory.java",
+      "synthetic": true
+    },
+    {
+      "implements": "StaffRecordPort",
+      "memory": true,
+      "methods": [
+        "list",
+        "get",
+        "update",
+        "close",
+        "removeDraft",
+        "decide",
+        "decisionStatus",
+        "ListSeed"
+      ],
+      "name": "SandboxRecordBook",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java",
+      "synthetic": true
+    }
+  ],
+  "ci_jdks": [
+    "25",
+    "25"
+  ],
+  "conditions": [
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"sandbox\", matchIfMissing = true",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"sandbox\", matchIfMissing = true",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"sandbox\", matchIfMissing = true",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"domain\"",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"domain\"",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"domain\"",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    }
+  ],
+  "config_files": [
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java",
+    "exp-insurance-terminal-sdk/src/main/resources/openapi.yml",
+    "exp-insurance-terminal-web/src/main/resources/application.yaml"
+  ],
+  "docs": [
+    {
+      "path": "docs/staff-authentication-and-sdk.md",
+      "title": "Configure the insurance staff terminal and its generated SDK"
+    }
+  ],
+  "editorial_sha256": "53457cfe708ec965ff748aaf98a91057048585153fa6f072402c3bb4accb0dbd",
+  "errors": [
+    {
+      "evidence": "new IllegalStateException(\"PROPERTY_NOT_SET\")));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(exception.getMessage()));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(exception.getMessage()));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClient.java"
+    },
+    {
+      "evidence": "new IllegalStateException(\"Distributor audit log was not recorded\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClient.java"
+    },
+    {
+      "evidence": "new IllegalStateException(\"Distributor id was not recorded\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"UPDATE_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"CLOSE_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DRAFT_REQUIRED\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PROPERTY_NOT_SET\");",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"AREA_NOT_INSURANCE\");",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode()));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"IMPERSONATION_AUDIT_NOT_CONFIRMED\")));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DOMAIN_RESPONSE_UNREADABLE\");",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/JsonResponses.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PROPERTY_NOT_SET\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxConfigurationStore.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxConfigurationStore.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"MASTER_TYPE_UNKNOWN\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxConfigurationStore.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DISTRIBUTOR_NOT_FOUND\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxDistributorDirectory.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"RECORD_NOT_FOUND\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DRAFT_REQUIRED\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode()))));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_MISMATCH\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode()))));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"IMPERSONATION_NOT_CONFIRMED\"))))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_MISMATCH\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode())));",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PROPERTY_NOT_SET\");",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "evidence": "@SecurityRequirement(name = \"staffBearer\")",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java"
+    },
+    {
+      "evidence": "HttpStatus.FORBIDDEN",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_STRICT_POLICY_REQUIRED\"));",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACTOR_MISMATCH\"));",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACTOR_MISMATCH\"));",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACCESS_DENIED\")))",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACCESS_DENIED\"));",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new OAuth2AuthenticationException(new OAuth2Error(\"invalid_token\"),\"Invalid staff authentication\");",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAuthentication.java"
+    },
+    {
+      "evidence": "new BadJwtException(\"Staff trust is not configured\"));",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalSecurityConfiguration.java"
+    }
+  ],
+  "files": {
+    ".github/workflows/maven-central.yml": "3e29d31d3cfb42b22d40e4ec233efc619b086dbb845779700a5d56860da4604a",
+    ".github/workflows/release.yml": "3abdbb5913aaa69bc286f254ffd7aa479860ce1989308e3040d95a5d31815b1e",
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "docs/staff-authentication-and-sdk.md": "220d79de5f686b2833f8d3cd84d132832a54366a5f5bcaf0eefec8522492a060",
+    "exp-insurance-terminal-core/pom.xml": "f2793e058bd15d8f32ab8fdd7c6673cfca9abb43e7e0d1244aa5b0412079afc9",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AccessCheck.java": "f64dde2456cb4ee894062d4397533e9f0c7135c4960c80bf9de5aae8e1adcd02",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AccessOutcome.java": "e09edfdc4b3e5e43406e6a468ae6a803a4b13f663514d18e1296464634988e85",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AccessPort.java": "20c2387608509bf5b1f7d2a16a9e96fb45db5b1d86fb0e3f02ebf64c87464ef5",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AuditEntry.java": "b6f19b3b2da1a7f42cd1ede760e3ebba43d3a8e11c334e014f6e8e8039d9addc",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AuditPort.java": "77dc8d5a8cf4ae5259401f5757c8aabb547acc87b93358532ab6df07b6bf2971",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/CloseMode.java": "e08c37b41af270585336888d091bc6e27141ae0a52170fcf1707b4a45a34e7c4",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ConfigurationPort.java": "15f2e922022da04ea6679bd0b56883169ad1c0628f66cf71a331d9a120d27f15",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DecideMode.java": "5cde4628237ae3a4af51b9d71713d390b4faaa7bdb742f78d4178e6d6c366f8c",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DistributorLink.java": "f1133dc75bcb175cbe9b334f347b1c24c77250be7b702814d7101721405f8425",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DistributorPort.java": "01f66e7026db8034b026b906e4c4c273dddfafaa7752f57cd22b817333596e5e",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DistributorView.java": "0c0c6e5dee0dce69aec6b51422bc905f962ebdffd52c754f1a71818862034beb",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClient.java": "fb2dbdfd7a777d52269e72957ad269ebb547decf6a0b8946bcc9500626a793eb",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClient.java": "58f872cc145bd7d874d540ff45f6a03e1b1e79481b5171b4b6e3bc0cab44edcf",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClient.java": "96becf95e1d0019535287235f3847799bc595ddf9ccce100c46ea318a37603e1",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/HttpAccessAdapter.java": "c28adf61a9914fc35f3a871b3c11a932d0bc7e8ebb3f870285492aaadb77c340",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/HttpIdentityAdapter.java": "67e35e60c22bc193b3bc04f08fa09cd9f4e158d11e5b681045fb78ebf1e1c475",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/IdentityPort.java": "3c8c032d69fee97f111e708dc5f1b6bd00d5a5ec55d1b4503133769a27c276c2",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationCoordinator.java": "d91cd01bc873bd2be0fdde7e38356fb28d054ae935effdbe2d24869ccf7d6c72",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationPort.java": "464db674285ce7be663f5c85f4b7e1978b11a32db9b9988b6219a2b73f12707d",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/InMemoryAuditLog.java": "0b373856aaaf709902b88a42f1e780715e595ac674174b9ec17478b52550bc46",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/InsuranceArea.java": "28ec671d381b241770c621cd9761fc378b66877abc9748cbf3509b864d9eb447",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/InsuranceSamples.java": "fee04b447b341dfabf996155464223ab64b2ca574bd65093f1f8c4d22e64c916",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/JsonResponses.java": "36d806daaa81af3952015e371d6bd57c50349b7a8988f5a9b1dc562ddc90d766",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/MasterRecord.java": "fd048ccff85b8c3a57708a0404ab6839dd7964530c5da269ebf559d70f2ef37e",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/RecordCommand.java": "48d611eac1f6693c0ac065ee4efe64626c0ba82de0e07eb08ed0e06cb8fc7ddc",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxConfigurationStore.java": "905b5f4c3b102aa52131392ba2f543ff2d52aee1fb23c68eb0e5ec22c61a3d7f",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxDistributorDirectory.java": "ed91393f667c01abb25186ef70383025088ff93d93668be33d2bc5f133434cab",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SandboxRecordBook.java": "81784387819b0c2302c15db58bd8e901c008bcb9dee394f95bde8b3c7b7f7943",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffArea.java": "a0ff79af934ee786edc4e5a8cb2b261bf38408eb8b9d59343aad0d2bd09b39da",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffRecord.java": "cf27057f9841c6e2b4ff1884ebd28eeb0e24be8f309fe01e6077373c9cc85b8d",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffRecordPort.java": "dcf1a4e618ae888826b1cdf9c8828f67e4ad10a20a741d421bf83755b75c01ca",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffSession.java": "64b9fb6555afbd9de8b642cecfd0d01fcd4ca53e19c7caaeec1a7bdeb9ab8203",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminal.java": "463e03cb38d48dace154ca7773c2d48650285701382e7a3286fe58409b814f52",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SubjectRef.java": "7d33cf2da199f460a2c63d2ec8366ff25c72326fdde6299c16b35e1b0759ff57",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalDeniedException.java": "c4fa932897825bc58388e3a9d2d93f0fda9c001a7e9e778aafb57862a7815448",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java": "9997a19a0f33569457fba276e9a3970ab3e1b73f7c397821b570ed8650b863ac",
+    "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/UpdateMode.java": "c78dcb9d34f41cb0e23c133fd5527de32d7e586bf66e74512b72cb4d841adf03",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClientTest.java": "af4a873c2e2cf856b17184edfdef199673c0adc6dca2b471ace58e7af11450cf",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClientTest.java": "4797b43b9d4369ef2d45406611cc4710b227cdd9c40246854630ae4c47750a42",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClientTest.java": "0530973fe2ff44182dffa0a9762aa6e75c1b7a29daf20fc0960ce78859a2c2bf",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/SecurityCenterSandbox.java": "896659b35f64cc34c103d7bf1fae6182110855577ec59f395e2bd56e79465c36",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java": "e42a0a30eaea4ee24b2234a954ffd0c975aced6fad3fb1d5e92ea582f3ae7bcb",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalFixture.java": "eca33ab170ed3096568532f8f89604e29df3e4cadbc33be02cad20a50fe523f5",
+    "exp-insurance-terminal-sdk/pom.xml": "f0ac103ae01feb0d12ea4e616a13bd6f6775b1a393f20540c1c7d5ea6ebd0005",
+    "exp-insurance-terminal-sdk/src/main/resources/openapi.yml": "11e989b26c759e114fa2546d5264f1c080fca214409dbc1da01f9108c84602cf",
+    "exp-insurance-terminal-sdk/src/test/java/io/fireflysoftware/experience/insurance/terminal/sdk/GeneratedTerminalClientContractTest.java": "4f0ec6cdef157a65789cfd012a7a155ebf64cda82e1c5214123881cb20e08abf",
+    "exp-insurance-terminal-sdk/src/test/resources/StaffTerminalApi-original-public-signatures.txt": "24b8e2a553ba3892b1a49fbd6cd3c9866485287ce4b1869716ffdc205a5400a4",
+    "exp-insurance-terminal-web/pom.xml": "96904cc1494dcb441bd4881b3888941ff5900bf739c681baf7ab47b975aafbda",
+    "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/InsuranceTerminalApplication.java": "d7017ea9ff4e21cb052e63e21e3c811356935589cb8b72002eae855d4acefa18",
+    "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java": "070f6514e88a0d623ff9f93efdca8f396ea54cd83e72306c365cdb2108f1f709",
+    "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAccessFilter.java": "183686776c0ce7c9e38de968d3a55a798880716b7e4a7a37a94fb77255a5446d",
+    "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalAuthentication.java": "01c4a6b51cd200a79ac67c944a6dd56806a4c36d6bddc09fc8998f77a789f747",
+    "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalExceptionHandler.java": "1cd0f7f3b7f94267ef3e3bb1e83ea5f8fabd5ca1e1ece65be23fe4b52b2bc438",
+    "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalSecurityConfiguration.java": "849a9fb36bf60c3fac58199c5304862714adc66c4424cfcd7991034fb3c9b175",
+    "exp-insurance-terminal-web/src/main/resources/application.yaml": "17d09dc22edbc6e9e6c7a627c1b691a4c850a5667c411eb90d037a7b80434539",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/OpenApiGenApplication.java": "7dfdd438c09774358ea2e8f2c3408f2aa587d3c0bc6923ffce096ee540c0116b",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java": "023a83f5e450ad2301602256deda316aea8610cbb8eab91f8d5e5a0052c2e000",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java": "293cec78075378b73b9b79ad6dbddd0d9a330f7f93899c72297ac84035e4bb93",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java": "a5448de9414457815d04481ecc700f264e030273871cd851781523fd623976f2",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalMissingTrustHttpTest.java": "95f474657cd6347188ac94c3ce20c91fcc5dfdd32d9b2fdb43dc1eabbc63628d",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalOpenApiContractTest.java": "68f3ba4cc9fd915d0794c505e6b4252bd816af7278b871884139d6c40d7d273b",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalPackagedStartupIT.java": "46aff1da3612f912bcce36597c42e51af7db17d7a895c1148b5e60b376e2782e",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java": "d9fd2078e4deafc64e1a0f0db0b3e03ad39c5ad5ec00961e939b4bea17895ba8",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalStrictPolicyRequiredHttpTest.java": "f71563ca4ab17704728da1d67d01756f3d4a9f3524b6bdcc09aca03c6947f6c1",
+    "exp-insurance-terminal-web/src/test/resources/legacy-terminal-openapi.yml": "9c9bcfb89c1752bbead2f79eeaeb45821515a407ca471b708246eeb7560829e4",
+    "pom.xml": "21df57c56775af79f19b6faf6cc4f93557588fca6230ae3bb0c10c2d14a13f89"
+  },
+  "migrations": [],
+  "modules": [
+    "exp-insurance-terminal-core",
+    "exp-insurance-terminal-web",
+    "exp-insurance-terminal-sdk"
+  ],
+  "operations": [
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}\"",
+      "method": "list",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}",
+      "signature": "public Flux<StaffRecord> list(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}\"",
+      "method": "open",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}",
+      "signature": "public Mono<StaffRecord> open(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/distributors\"",
+      "method": "distributors",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/distributors",
+      "signature": "public Flux<DistributorView> distributors(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/masters/{type}\"",
+      "method": "masters",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/masters/{type}",
+      "signature": "public Flux<MasterRecord> masters(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String type)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/sessions\"",
+      "method": "signIn",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/sessions",
+      "signature": "public Mono<StaffSession> signIn( @Parameter(hidden = true) @AuthenticationPrincipal SecurityPrincipal principal, @RequestBody SignInRequest body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/close\"",
+      "method": "close",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/close",
+      "signature": "public Mono<StaffRecord> close(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/remove\"",
+      "method": "removeDraft",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/remove",
+      "signature": "public Mono<Void> removeDraft(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/decide\"",
+      "method": "decide",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/decide",
+      "signature": "public Mono<StaffRecord> decide(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/distributor\"",
+      "method": "attach",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/distributor",
+      "signature": "public Mono<StaffRecord> attach(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}\"",
+      "method": "update",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}",
+      "signature": "public Mono<StaffRecord> update(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "PUT"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/configuration/{key}\"",
+      "method": "putProperty",
+      "owner": "StaffController",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffController.java",
+      "route": "/api/v1/staff/configuration/{key}",
+      "signature": "public Mono<String> putProperty(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String key, @RequestBody PropertyBody body)",
+      "verb": "PUT"
+    }
+  ],
+  "poms": [
+    {
+      "artifact": "exp-insurance-terminal-core",
+      "dependencies": [
+        "org.springframework.boot:spring-boot-starter-webflux:",
+        "com.fasterxml.jackson.core:jackson-databind:",
+        "org.springframework.boot:spring-boot-starter-test:",
+        "io.fireflysoftware:domain-core-configuration-sdk:26.10.6",
+        "io.fireflysoftware:domain-core-reference-data-sdk:26.10.6",
+        "io.fireflysoftware:domain-core-security-center-sdk:26.10.6",
+        "io.fireflysoftware:domain-insurance-policies-sdk:26.10.6",
+        "io.fireflysoftware:domain-insurance-claims-sdk:26.10.6",
+        "io.fireflysoftware:domain-insurance-underwriting-sdk:26.10.6",
+        "io.fireflysoftware:domain-distributor-branding-sdk:26.10.6",
+        "io.fireflysoftware:domain-core-security-center-core:26.10.6"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:exp-insurance-terminal:26.10.6",
+      "path": "exp-insurance-terminal-core/pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "exp-insurance-terminal-sdk",
+      "dependencies": [
+        "io.fireflysoftware:exp-insurance-terminal-web:",
+        "io.swagger.core.v3:swagger-annotations:",
+        "com.fasterxml.jackson.core:jackson-databind:",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:",
+        "jakarta.annotation:jakarta.annotation-api:",
+        "org.projectlombok:lombok:",
+        "com.squareup.okhttp3:okhttp:",
+        "com.squareup.okhttp3:logging-interceptor:",
+        "org.openapitools:jackson-databind-nullable:0.2.8",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:",
+        "javax.annotation:javax.annotation-api:1.3.2",
+        "org.springframework:spring-webflux:",
+        "org.springframework.boot:spring-boot-starter-test:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:exp-insurance-terminal:26.10.6",
+      "path": "exp-insurance-terminal-sdk/pom.xml",
+      "plugins": [
+        "openapi-generator-maven-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "exp-insurance-terminal-web",
+      "dependencies": [
+        "io.fireflysoftware:exp-insurance-terminal-core:",
+        "org.springframework.boot:spring-boot-starter-webflux:",
+        "org.springframework.boot:spring-boot-starter-actuator:",
+        "org.springframework.boot:spring-boot-starter-test:",
+        "org.fireflyframework:fireflyframework-security-resource-server:",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:",
+        "org.springdoc:springdoc-openapi-starter-webflux-api:${springdoc-openapi.version}"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:exp-insurance-terminal:26.10.6",
+      "path": "exp-insurance-terminal-web/pom.xml",
+      "plugins": [
+        "maven-failsafe-plugin",
+        "spring-boot-maven-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "exp-insurance-terminal",
+      "dependencies": [
+        "io.fireflysoftware:firefly-bom:26.10.6",
+        "io.fireflysoftware:exp-insurance-terminal-core:${project.version}",
+        "io.fireflysoftware:exp-insurance-terminal-web:${project.version}",
+        "io.fireflysoftware:exp-insurance-terminal-sdk:${project.version}"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "25",
+      "parent": "io.fireflysoftware:firefly-parent:26.10.6",
+      "path": "pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    }
+  ],
+  "ports": [
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<AccessOutcome> check(AccessCheck request)"
+      ],
+      "name": "AccessPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AccessPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<AuditEntry> append(AuditEntry entry)",
+        "Flux<AuditEntry> list()"
+      ],
+      "name": "AuditPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AuditPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<String> getRequired(String key)",
+        "Mono<String> put(String key, String value, java.util.UUID employeeId)",
+        "Flux<MasterRecord> masters(String type)"
+      ],
+      "name": "ConfigurationPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ConfigurationPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Flux<DistributorView> list()",
+        "Mono<DistributorView> link(DistributorLink link)"
+      ],
+      "name": "DistributorPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DistributorPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<SubjectRef> authenticate(String username)",
+        "Mono<SubjectRef> resolve(String actorId)"
+      ],
+      "name": "IdentityPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/IdentityPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<AuditEntry> impersonate(UUID employeeId, UUID customerPartyId, String reason, String action, String area, UUID recordId)"
+      ],
+      "name": "ImpersonationPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/ImpersonationPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Flux<StaffRecord> list(StaffArea area)",
+        "Mono<StaffRecord> get(StaffArea area, UUID recordId)",
+        "Mono<StaffRecord> update(RecordCommand command)",
+        "Mono<StaffRecord> close(RecordCommand command)",
+        "Mono<Void> removeDraft(RecordCommand command, String requiredStatus)",
+        "Mono<StaffRecord> decide(RecordCommand command)"
+      ],
+      "name": "StaffRecordPort",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffRecordPort.java"
+    }
+  ],
+  "repository": "exp-insurance-terminal",
+  "routes": [],
+  "schema": 1,
+  "settings": [
+    {
+      "default": "http://localhost:8085",
+      "key": "api-configuration.domain-platform.security-center.base-path",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalWiring.java"
+    },
+    {
+      "default": "",
+      "key": "firefly.terminal.security.issuer",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "",
+      "key": "firefly.terminal.security.audience",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "",
+      "key": "firefly.terminal.security.jwk-set-uri",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "false",
+      "key": "firefly.security.resource-server.strict-policy",
+      "path": "exp-insurance-terminal-web/src/main/java/io/fireflysoftware/experience/insurance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "8121",
+      "key": "SERVER_PORT",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8085",
+      "key": "SECURITY_CENTER_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "sandbox",
+      "key": "FIREFLY_TERMINAL_ADAPTER",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8088",
+      "key": "CONFIG_MGMT_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8089",
+      "key": "MASTER_DATA_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8070",
+      "key": "DISTRIBUTOR_MGMT_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8071",
+      "key": "INSURANCE_POLICIES_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8072",
+      "key": "INSURANCE_CLAIMS_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8073",
+      "key": "INSURANCE_UNDERWRITING_URL",
+      "path": "exp-insurance-terminal-web/src/main/resources/application.yaml"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "readsAndWritesConfigurationAndReferenceDataThroughTheDomainSdks",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClientTest.java"
+    },
+    {
+      "name": "listReadsDistributorsFromTheDomainSdk",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClientTest.java"
+    },
+    {
+      "name": "linkReadsTheViewFromTheDistributorProfile",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClientTest.java"
+    },
+    {
+      "name": "linkDoesNotInventAViewWhenTheAuditRowIsMissing",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClientTest.java"
+    },
+    {
+      "name": "policyUpdatePutsTheEmployeeAndTheCustomerParty",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "claimClosePostsTheClosePath",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "submissionDecisionPostsDecline",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "handle",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "identity",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "access",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "write",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "close",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "sampleEmployeeSignsIn",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "customerSubjectCannotOpenTheTerminal",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "deniedActorCannotOpenTheTerminal",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "customerCanReadTheSamplePolicyAndStillCannotAdminister",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "sampleEmployeeImpersonatesBeforeACustomerUpdate",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "deniedActorCannotImpersonateAndTheRecordStaysUnchanged",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "policyCloseUsesCancelledFromConfiguration",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "claimCloseUsesClosedAndADeclineIsADecision",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "employeeAttachesADistributorUuidToAPolicy",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "propertyChangeGoesThroughConfiguration",
+      "path": "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "generatedPublicClientRetainsTheOriginalSignatures",
+      "path": "exp-insurance-terminal-sdk/src/test/java/io/fireflysoftware/experience/insurance/terminal/sdk/GeneratedTerminalClientContractTest.java"
+    },
+    {
+      "name": "startJwks",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "anonymousActorHeaderCannotReadStaffData",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "usernameIsNotAnAuthenticationCredential",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "arbitraryBearerCannotTurnActorHeaderIntoIdentity",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "signedIdentityReadsAndCarriesExactCurrentPolicyContext",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "signedActorIsDerivedWhenCompatibilityHeaderIsAbsent",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "mismatchedHeaderCannotSelectAnotherActor",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "duplicateActorHeaderIsDenied",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "currentDenialAfterPermitCannotReuseASuccess",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "emptyOrObligationBearingPolicyIsDenied",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "sessionUsernameCannotOverrideSignedActor",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "resolverCannotRemapSignedActor",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "signedTokensNeedIssuerAudienceFiniteExpiryAndExactActorTenantClaims",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "wrongRsaSignatureIsDenied",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "policyFailureHasNoBusinessEffectsOrInternalDetails",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "legacyBusinessDenialRetainsValidJsonReasonCode",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "sessionAlsoRejectsResolverActorRemapping",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "nativeJaflyPolicyDeniesWithoutProjectRules",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "unmatchedRoutesCannotBecomeAnonymousOrAuthenticatedBypass",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "healthHasNoStaffDataOrAuthority",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "currentPolicyTimeoutMustDenyBeforeAnyBusinessPort",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "expiryWhileCurrentPolicyIsPendingMustDenyBeforeAnyBusinessPort",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "affirmativeControlReachesExactlyOneRecordEffect",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyAdministerMustNotReadAnyRecords",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyImpersonateMustNotMutateAnyRecord",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "missingImpersonationAuditAcknowledgmentMustNotMutateAnyRecord",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyAdministerMustNotCreateAnAuthenticatedSession",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "missingTrustCannotUseTheFrameworkGeneratedLocalKeyAsFallback",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalMissingTrustHttpTest.java"
+    },
+    {
+      "name": "nativeProducerRetainsHistoricSdkNamesAndPublishesBearerTrust",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalOpenApiContractTest.java"
+    },
+    {
+      "name": "ordinaryExecutableStartsWithOnlyItsPackagedRuntimeAndPublishesItsContract",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalPackagedStartupIT.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "stopJwks",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "noBusinessEffects",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "retainedAuthenticatedSessionCannotReadStaffData",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "retainedSessionCannotPerformUnsafeStaffOperationWithoutBearer",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "signedBearerWinsOverRetainedSessionAndStillUsesCurrentPolicy",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "invalidBearerCannotBorrowVerifiedSession",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalStrictPolicyRequiredHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalStrictPolicyRequiredHttpTest.java"
+    },
+    {
+      "name": "aPermittingProjectProviderCannotBypassRequiredStrictPolicyMode",
+      "path": "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalStrictPolicyRequiredHttpTest.java"
+    }
+  ],
+  "tests": [
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainConfigurationClientTest.java",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainDistributorClientTest.java",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/DomainRecordClientTest.java",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/SecurityCenterSandbox.java",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/StaffTerminalTest.java",
+    "exp-insurance-terminal-core/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalFixture.java",
+    "exp-insurance-terminal-sdk/src/test/java/io/fireflysoftware/experience/insurance/terminal/sdk/GeneratedTerminalClientContractTest.java",
+    "exp-insurance-terminal-sdk/src/test/resources/StaffTerminalApi-original-public-signatures.txt",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/OpenApiGenApplication.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalBoundaryHttpTest.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalDefaultDenyHttpTest.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalIndependentHttpTest.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalMissingTrustHttpTest.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalOpenApiContractTest.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalPackagedStartupIT.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalSessionAuthorityHttpTest.java",
+    "exp-insurance-terminal-web/src/test/java/io/fireflysoftware/experience/insurance/terminal/TerminalStrictPolicyRequiredHttpTest.java",
+    "exp-insurance-terminal-web/src/test/resources/legacy-terminal-openapi.yml"
+  ],
+  "types": [
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "action",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "resourceType",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "resourceId",
+          "type": "String"
+        }
+      ],
+      "name": "AccessCheck",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AccessCheck.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "allowed",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "reasonCode",
+          "type": "String"
+        }
+      ],
+      "name": "AccessOutcome",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AccessOutcome.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "auditId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "employeeId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "reason",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "action",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "recordId",
+          "type": "UUID"
+        }
+      ],
+      "name": "AuditEntry",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/AuditEntry.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "recordId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "employeeId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "channel",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "collaboratorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "String"
+        }
+      ],
+      "name": "DistributorLink",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DistributorLink.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "role",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "partyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "channel",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "agencyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "collaboratorId",
+          "type": "UUID"
+        }
+      ],
+      "name": "DistributorView",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/DistributorView.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "type",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "code",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "name": "MasterRecord",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/MasterRecord.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "StaffArea"
+        },
+        {
+          "constraints": [],
+          "name": "recordId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "reason",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "note",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "collaboratorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "channel",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "decision",
+          "type": "String"
+        }
+      ],
+      "name": "RecordCommand",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/RecordCommand.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "note",
+          "type": "String"
+        }
+      ],
+      "name": "StaffRecord",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffRecord.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "provider",
+          "type": "String"
+        }
+      ],
+      "name": "StaffSession",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/StaffSession.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "provider",
+          "type": "String"
+        }
+      ],
+      "name": "SubjectRef",
+      "path": "exp-insurance-terminal-core/src/main/java/io/fireflysoftware/experience/insurance/terminal/SubjectRef.java",
+      "persistent": false
+    }
+  ],
+  "verification_hazards": [],
+  "workflows": [
+    ".github/workflows/maven-central.yml",
+    ".github/workflows/release.yml"
+  ]
+}
