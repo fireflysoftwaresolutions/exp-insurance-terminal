@@ -61,7 +61,7 @@ public class TerminalSecurityConfiguration {
           .anyExchange().denyAll())
         .oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt.jwtDecoder(decoder)
           .jwtAuthenticationConverter(token -> authentication.convert(token).cast(AbstractAuthenticationToken.class))))
-        .addFilterBefore(new TerminalAccessFilter(contexts,policies,clock,strictPolicy),SecurityWebFiltersOrder.AUTHORIZATION)
+        .addFilterBefore(new TerminalAccessFilterImpl(contexts,policies,clock,strictPolicy),SecurityWebFiltersOrder.AUTHORIZATION)
         .build();
   }
 }

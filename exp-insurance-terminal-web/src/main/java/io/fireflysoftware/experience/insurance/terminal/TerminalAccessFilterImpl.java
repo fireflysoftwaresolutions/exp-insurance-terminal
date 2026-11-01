@@ -24,13 +24,13 @@ import org.springframework.web.server.*;
 import reactor.core.publisher.Mono;
 
 /** Runs inside the security chain, before any controller or response replay cache. */
-final class TerminalAccessFilter implements WebFilter {
+final class TerminalAccessFilterImpl implements WebFilter {
   private final SecurityContextPort contexts;
   private final PolicyDecisionPort policies;
   private final Clock clock;
   private final boolean strictPolicy;
 
-  TerminalAccessFilter(SecurityContextPort contexts,PolicyDecisionPort policies,Clock clock,boolean strictPolicy) {
+  TerminalAccessFilterImpl(SecurityContextPort contexts,PolicyDecisionPort policies,Clock clock,boolean strictPolicy) {
     this.contexts=Objects.requireNonNull(contexts);
     this.policies=Objects.requireNonNull(policies);
     this.clock=Objects.requireNonNull(clock);
