@@ -32,8 +32,8 @@ class TerminalIndependentHttpTest {
     return Mono.just(new AccessOutcome(true,""));
   });}
   @Bean @Primary StaffTerminal reviewTerminal(IdentityPort identity,AccessPort access){
-    var config=new SandboxConfigurationStore(InsuranceSamples.properties(),InsuranceSamples.currencies(),InsuranceSamples.countries());
-    var book=new SandboxRecordBook(config,InsuranceSamples.records());
+    var config=new SandboxConfigurationStoreImpl(InsuranceSamples.properties(),InsuranceSamples.currencies(),InsuranceSamples.countries());
+    var book=new SandboxRecordBookImpl(config,InsuranceSamples.records());
     StaffRecordPort records=new StaffRecordPort(){
       public Flux<StaffRecord> list(StaffArea area){READS.incrementAndGet();return book.list(area);}
       public Mono<StaffRecord> get(StaffArea area,UUID id){READS.incrementAndGet();return book.get(area,id);}
@@ -46,8 +46,8 @@ class TerminalIndependentHttpTest {
       public Mono<AuditEntry> append(AuditEntry entry){AUDITS.incrementAndGet();return MODE.get().equals("AUDIT_EMPTY")?Mono.empty():Mono.just(entry);}
       public Flux<AuditEntry> list(){return Flux.empty();}
     };
-    return new StaffTerminal(identity,access,new ImpersonationCoordinator(access,audit),config,
-      new SandboxDistributorDirectory(config,InsuranceArea.POLICY.channelKey(),InsuranceSamples.distributors()),records,audit,
+    return new StaffTerminal(identity,access,new ImpersonationCoordinatorImpl(access,audit),config,
+      new SandboxDistributorDirectoryImpl(config,InsuranceArea.POLICY.channelKey(),InsuranceSamples.distributors()),records,audit,
       InsuranceArea.POLICY.accessType(),InsuranceArea.POLICY.primaryId().toString(),InsuranceArea.PREFIX);
   }
  }

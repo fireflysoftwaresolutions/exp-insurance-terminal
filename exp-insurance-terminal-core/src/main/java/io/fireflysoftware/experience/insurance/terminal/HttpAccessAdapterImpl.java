@@ -26,16 +26,16 @@ import java.util.UUID;
 /**
  * Asks domain-core-security-center to decide an access check.
  */
-public final class HttpAccessAdapter implements AccessPort {
+public final class HttpAccessAdapterImpl implements AccessPort {
 
     private final AccessControllerApi api;
 
-    public HttpAccessAdapter(AccessControllerApi api) {
+    public HttpAccessAdapterImpl(AccessControllerApi api) {
         this.api = api;
     }
 
-    public static HttpAccessAdapter at(String baseUrl) {
-        return new HttpAccessAdapter(new AccessControllerApi(client(baseUrl)));
+    public static HttpAccessAdapterImpl at(String baseUrl) {
+        return new HttpAccessAdapterImpl(new AccessControllerApi(client(baseUrl)));
     }
 
     @Override

@@ -32,12 +32,12 @@ import java.util.UUID;
 /**
  * Reads and updates policies, claims, and submissions through their domain SDKs.
  */
-public final class DomainRecordClient implements StaffRecordPort {
+public final class DomainRecordClientImpl implements StaffRecordPort {
 
     private final ConfigurationPort configuration;
     private final Map<String, String> domainBaseUrls;
 
-    public DomainRecordClient(ConfigurationPort configuration, Map<String, String> domainBaseUrls) {
+    public DomainRecordClientImpl(ConfigurationPort configuration, Map<String, String> domainBaseUrls) {
         this.configuration = configuration;
         this.domainBaseUrls = Map.copyOf(domainBaseUrls);
     }
@@ -141,7 +141,7 @@ public final class DomainRecordClient implements StaffRecordPort {
             case DECLINE -> underwriting(area).decline(recordId, submissionReason(command), idempotency);
             case APPROVE_OR_REJECT, NONE -> Mono.error(new TerminalDeniedException("DECISION_NOT_APPLICABLE"));
         };
-        return call.thenReturn(commanded(command, SandboxRecordBook.decisionStatus(command)));
+        return call.thenReturn(commanded(command, SandboxRecordBookImpl.decisionStatus(command)));
     }
 
     private PoliciesApi policies(InsuranceArea area) {

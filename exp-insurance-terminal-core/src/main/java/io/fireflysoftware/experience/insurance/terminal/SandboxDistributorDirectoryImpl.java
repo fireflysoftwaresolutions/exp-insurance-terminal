@@ -30,14 +30,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Sandbox directory of distributors. Roles describe the sample parties.
  * The live adapter calls core-common-distributor-mgmt and does not create agency tables.
  */
-public final class SandboxDistributorDirectory implements DistributorPort {
+public final class SandboxDistributorDirectoryImpl implements DistributorPort {
 
     private final Map<UUID, DistributorView> distributors = new ConcurrentHashMap<>();
     private final List<DistributorLink> links = new CopyOnWriteArrayList<>();
     private final ConfigurationPort configuration;
     private final String channelKey;
 
-    public SandboxDistributorDirectory(ConfigurationPort configuration, String channelKey, List<DistributorView> seeded) {
+    public SandboxDistributorDirectoryImpl(ConfigurationPort configuration, String channelKey, List<DistributorView> seeded) {
         this.configuration = configuration;
         this.channelKey = channelKey;
         seeded.forEach(view -> distributors.put(view.distributorId(), view));

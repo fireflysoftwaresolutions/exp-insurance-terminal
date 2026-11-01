@@ -31,12 +31,12 @@ import java.util.UUID;
  * Configuration and reference data go through the domain SDKs.
  * Property values are not kept in this process.
  */
-public final class DomainConfigurationClient implements ConfigurationPort {
+public final class DomainConfigurationClientImpl implements ConfigurationPort {
 
     private final EnvironmentConfigApi configuration;
     private final MastersApi masters;
 
-    public DomainConfigurationClient(EnvironmentConfigApi configuration, MastersApi masters) {
+    public DomainConfigurationClientImpl(EnvironmentConfigApi configuration, MastersApi masters) {
         this.configuration = configuration;
         this.masters = masters;
     }

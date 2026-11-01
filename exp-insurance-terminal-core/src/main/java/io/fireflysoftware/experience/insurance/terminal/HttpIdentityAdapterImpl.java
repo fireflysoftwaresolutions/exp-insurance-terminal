@@ -27,16 +27,16 @@ import java.util.UUID;
 /**
  * Resolves a staff subject through domain-core-security-center. A 404 is an unknown subject.
  */
-public final class HttpIdentityAdapter implements IdentityPort {
+public final class HttpIdentityAdapterImpl implements IdentityPort {
 
     private final IdentityControllerApi api;
 
-    public HttpIdentityAdapter(IdentityControllerApi api) {
+    public HttpIdentityAdapterImpl(IdentityControllerApi api) {
         this.api = api;
     }
 
-    public static HttpIdentityAdapter at(String baseUrl) {
-        return new HttpIdentityAdapter(new IdentityControllerApi(HttpAccessAdapter.client(baseUrl)));
+    public static HttpIdentityAdapterImpl at(String baseUrl) {
+        return new HttpIdentityAdapterImpl(new IdentityControllerApi(HttpAccessAdapterImpl.client(baseUrl)));
     }
 
     @Override

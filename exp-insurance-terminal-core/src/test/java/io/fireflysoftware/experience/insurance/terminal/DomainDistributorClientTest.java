@@ -45,7 +45,7 @@ class DomainDistributorClientTest {
     private DistributorQueryApi distributors;
     private AgencyApi agencies;
     private AgentApi agents;
-    private DomainDistributorClient client;
+    private DomainDistributorClientImpl client;
 
     @BeforeEach
     void setUp() {
@@ -54,9 +54,9 @@ class DomainDistributorClientTest {
         agents = mock(AgentApi.class);
         when(agencies.listAgencies(any(), any())).thenReturn(Mono.just(new PaginationResponse()));
         when(agents.listAgents(any(), any())).thenReturn(Mono.just(new PaginationResponse()));
-        ConfigurationPort configuration = new SandboxConfigurationStore(
+        ConfigurationPort configuration = new SandboxConfigurationStoreImpl(
                 InsuranceSamples.properties(), InsuranceSamples.currencies(), InsuranceSamples.countries());
-        client = new DomainDistributorClient(configuration, distributors, agencies, agents,
+        client = new DomainDistributorClientImpl(configuration, distributors, agencies, agents,
                 InsuranceArea.POLICY.channelKey());
     }
 

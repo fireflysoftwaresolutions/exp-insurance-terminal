@@ -30,8 +30,8 @@ public final class InsuranceSamples {
         return values;
     }
 
-    public static SandboxRecordBook.ListSeed records() {
-        return new SandboxRecordBook.ListSeed(List.of(
+    public static SandboxRecordBookImpl.ListSeed records() {
+        return new SandboxRecordBookImpl.ListSeed(List.of(
                 record(InsuranceArea.POLICY, "IN_FORCE", "Sample policy"),
                 record(InsuranceArea.CLAIM, "OPEN", "Sample claim"),
                 record(InsuranceArea.SUBMISSION, "SUBMITTED", "Sample underwriting submission")

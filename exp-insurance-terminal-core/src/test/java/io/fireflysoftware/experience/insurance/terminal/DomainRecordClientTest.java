@@ -23,7 +23,7 @@ class DomainRecordClientTest {
 
     private HttpServer server;
     private final List<String> calls = new CopyOnWriteArrayList<>();
-    private DomainRecordClient client;
+    private DomainRecordClientImpl client;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
@@ -32,9 +32,9 @@ class DomainRecordClientTest {
         server.createContext("/", this::handle);
         server.start();
         String base = "http://127.0.0.1:" + server.getAddress().getPort();
-        ConfigurationPort configuration = new SandboxConfigurationStore(
+        ConfigurationPort configuration = new SandboxConfigurationStoreImpl(
                 InsuranceSamples.properties(), InsuranceSamples.currencies(), InsuranceSamples.countries());
-        client = new DomainRecordClient(configuration, Map.of(
+        client = new DomainRecordClientImpl(configuration, Map.of(
                 "policies", base,
                 "claims", base,
                 "submissions", base));

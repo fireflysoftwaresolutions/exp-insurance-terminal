@@ -29,15 +29,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * In-memory stand-in for core-common-config-mgmt environment configuration and for
  * reference master data. The terminal process does not open a database for these values.
  * An installer sets the same keys in environment configuration. Set
- * {@code firefly.terminal.adapter=domain} to use {@link DomainConfigurationClient}.
+ * {@code firefly.terminal.adapter=domain} to use {@link DomainConfigurationClientImpl}.
  */
-public final class SandboxConfigurationStore implements ConfigurationPort {
+public final class SandboxConfigurationStoreImpl implements ConfigurationPort {
 
     private final Map<String, String> properties = new ConcurrentHashMap<>();
     private final List<MasterRecord> currencies;
     private final List<MasterRecord> countries;
 
-    public SandboxConfigurationStore(Map<String, String> seeded, List<MasterRecord> currencies, List<MasterRecord> countries) {
+    public SandboxConfigurationStoreImpl(Map<String, String> seeded, List<MasterRecord> currencies, List<MasterRecord> countries) {
         this.properties.putAll(seeded);
         this.currencies = List.copyOf(currencies);
         this.countries = List.copyOf(countries);

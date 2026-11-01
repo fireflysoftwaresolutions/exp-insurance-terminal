@@ -25,12 +25,12 @@ import java.util.UUID;
  * Impersonation asks the security center for IMPERSONATE, then stores both ids.
  * Allow and deny come from that check. This class does not keep its own grant table.
  */
-public final class ImpersonationCoordinator implements ImpersonationPort {
+public final class ImpersonationCoordinatorImpl implements ImpersonationPort {
 
     private final AccessPort accessPort;
     private final AuditPort auditPort;
 
-    public ImpersonationCoordinator(AccessPort accessPort, AuditPort auditPort) {
+    public ImpersonationCoordinatorImpl(AccessPort accessPort, AuditPort auditPort) {
         this.accessPort = accessPort;
         this.auditPort = auditPort;
     }

@@ -100,11 +100,11 @@ class TerminalBoundaryHttpTest {
         return Mono.just(new AccessOutcome(DENIAL.get()==null,DENIAL.get()==null?"":DENIAL.get())); };
     }
     @Bean StaffTerminal terminal(IdentityPort identity, AccessPort access) {
-      var config = new SandboxConfigurationStore(InsuranceSamples.properties(), InsuranceSamples.currencies(), InsuranceSamples.countries());
-      var audit = new InMemoryAuditLog();
-      return new StaffTerminal(identity, access, new ImpersonationCoordinator(access, audit), config,
-          new SandboxDistributorDirectory(config, InsuranceArea.POLICY.channelKey(), InsuranceSamples.distributors()),
-          new SandboxRecordBook(config, InsuranceSamples.records()), audit,
+      var config = new SandboxConfigurationStoreImpl(InsuranceSamples.properties(), InsuranceSamples.currencies(), InsuranceSamples.countries());
+      var audit = new InMemoryAuditLogImpl();
+      return new StaffTerminal(identity, access, new ImpersonationCoordinatorImpl(access, audit), config,
+          new SandboxDistributorDirectoryImpl(config, InsuranceArea.POLICY.channelKey(), InsuranceSamples.distributors()),
+          new SandboxRecordBookImpl(config, InsuranceSamples.records()), audit,
           InsuranceArea.POLICY.accessType(), InsuranceArea.POLICY.primaryId().toString(), InsuranceArea.PREFIX);
     }
 
