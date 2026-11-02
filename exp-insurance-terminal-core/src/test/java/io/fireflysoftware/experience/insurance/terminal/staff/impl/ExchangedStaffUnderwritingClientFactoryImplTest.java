@@ -62,6 +62,7 @@ class ExchangedStaffUnderwritingClientFactoryImplTest {
     private static final class Fixture implements AutoCloseable {
         final HttpServer server;final AtomicInteger calls=new AtomicInteger();final AtomicReference<String> body=new AtomicReference<>(),authorization=new AtomicReference<>();
         final AtomicReference<Throwable> failure=new AtomicReference<>();final AtomicLong nanos=new AtomicLong();final String clientCredential=UUID.randomUUID().toString();
+        final AtomicInteger domainCalls=new AtomicInteger();final AtomicReference<String> domainAuthorization=new AtomicReference<>();
         final StaffUnderwritingSettings settings;String reply;Runnable during=()->{};
         Fixture(String reply) throws Exception {
             this.reply=reply;server=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0);
@@ -69,8 +70,14 @@ class ExchangedStaffUnderwritingClientFactoryImplTest {
                 calls.incrementAndGet();assertEquals("POST",request.getRequestMethod());authorization.set(request.getRequestHeaders().getFirst("Authorization"));
                 byte[] input=request.getRequestBody().readNBytes(32769);assertTrue(input.length<=32768);body.set(new String(input,StandardCharsets.UTF_8));during.run();
                 byte[] output=this.reply.getBytes(StandardCharsets.UTF_8);request.getResponseHeaders().set("Content-Type","application/json");request.sendResponseHeaders(200,output.length);request.getResponseBody().write(output);
+            }catch(Throwable error){failure.set(error);}finally{request.close();}});
+            server.createContext("/api/v1/staff/underwriting/intents",request->{try{
+                domainCalls.incrementAndGet();assertEquals("POST",request.getRequestMethod());domainAuthorization.set(request.getRequestHeaders().getFirst("Authorization"));
+                byte[] input=request.getRequestBody().readNBytes(65537);assertTrue(input.length>0&&input.length<=65536);
+                byte[] output="{\"status\":403}".getBytes(StandardCharsets.UTF_8);request.getResponseHeaders().set("Content-Type","application/json");
+                request.sendResponseHeaders(403,output.length);request.getResponseBody().write(output);
             }catch(Throwable error){failure.set(error);}finally{request.close();}});server.start();
-            settings=new StaffUnderwritingSettings(true,URI.create("https://owner.invalid"),ISSUER,URI.create(ISSUER+"/jwks"),"experience","domain","registered-staff-client","experience-client","exchange","opaque-tenant",true);
+            settings=new StaffUnderwritingSettings(true,URI.create("http://127.0.0.1:"+server.getAddress().getPort()),ISSUER,URI.create(ISSUER+"/jwks"),"experience","domain","registered-staff-client","experience-client","exchange","opaque-tenant",true);
         }
         ExchangedStaffUnderwritingClientFactoryImpl owner(){var registration=ClientRegistration.withRegistrationId("exchange").clientId("experience-client").clientSecret(clientCredential)
             .authorizationGrantType(AuthorizationGrantType.TOKEN_EXCHANGE).clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC).issuerUri(ISSUER)
@@ -81,13 +88,19 @@ class ExchangedStaffUnderwritingClientFactoryImplTest {
         @Override public void close(){server.stop(0);assertNull(failure.get(),()->"Controlled token endpoint failed: "+failure.get());}
     }
     @Test void nativeGrantUsesOriginalStaffTokenExactAudienceAndNarrowScope() throws Exception {
-        var original=original();try(var fixture=new Fixture(response(signed(false,Map.of(),KEY)))){
+        var original=original();String target=signed(false,Map.of(),KEY);try(var fixture=new Fixture(response(target))){
             var lease=fixture.acquire(original);assertNotNull(lease);assertNotNull(lease.api());assertEquals(1,fixture.calls.get());
             var fields=form(fixture.body.get());assertEquals("urn:ietf:params:oauth:grant-type:token-exchange",fields.get("grant_type"));
             assertEquals(original.getToken().getTokenValue(),fields.get("subject_token"));assertEquals("urn:ietf:params:oauth:token-type:jwt",fields.get("subject_token_type"));
             assertEquals("domain",fields.get("audience"));assertEquals(SCOPE,fields.get("scope"));assertFalse(fields.containsKey("actor_token"));
             assertEquals("Basic "+Base64.getEncoder().encodeToString(("experience-client:"+fixture.clientCredential).getBytes(StandardCharsets.UTF_8)),fixture.authorization.get());
             assertFalse(lease.remaining().isNegative());assertTrue(lease.remaining().compareTo(Duration.ofSeconds(5))<=0);
+            var refusal=assertThrows(org.springframework.web.reactive.function.client.WebClientResponseException.class,()->lease.api()
+                .prepareStaffUnderwritingIntent(new io.fireflysoftware.domain.insurance.underwriting.sdk.model.GovernedUnderwritingIntent()).block(LIMIT));
+            assertEquals(403,refusal.getStatusCode().value());assertEquals(1,fixture.domainCalls.get());
+            assertTrue(("Bearer "+target).equals(fixture.domainAuthorization.get()),"The genuine Domain STAFF operation must carry the exchanged bearer");
+            var quote=(io.fireflysoftware.domain.insurance.underwriting.sdk.invoker.auth.HttpBearerAuth)lease.api().getApiClient().getAuthentication("governedQuoteBearer");
+            assertNull(quote.getBearerToken(),"The unrelated generated quote scheme must stay unconfigured");
         }
     }
     @Test void changedSignedStaffTenantSubjectClientAudienceOrValidityIsRefused() throws Exception {

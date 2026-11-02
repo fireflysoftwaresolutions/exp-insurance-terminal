@@ -3,6 +3,7 @@ package io.fireflysoftware.experience.insurance.terminal.staff.impl;
 
 import io.fireflysoftware.domain.insurance.underwriting.sdk.api.StaffUnderwritingApi;
 import io.fireflysoftware.domain.insurance.underwriting.sdk.invoker.ApiClient;
+import io.fireflysoftware.domain.insurance.underwriting.sdk.invoker.auth.HttpBearerAuth;
 import io.fireflysoftware.experience.insurance.terminal.staff.*;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -84,7 +85,9 @@ public final class ExchangedStaffUnderwritingClientFactoryImpl implements StaffU
                                 ||access.getTokenValue().isBlank()||access.getExpiresAt()==null||!clock.instant().isBefore(access.getExpiresAt()))throw forbidden();
                             return targetDecoder.decode(access.getTokenValue()).switchIfEmpty(Mono.error(forbidden())).flatMap(target->{
                                 target(target,subject,scopes);if(!access.getTokenValue().equals(target.getTokenValue()))throw forbidden();
-                                var client=new ApiClient(transport).setBasePath(settings.endpoint().toASCIIString().replaceFirst("/$",""));client.setBearerToken(access.getTokenValue());
+                                var client=new ApiClient(transport).setBasePath(settings.endpoint().toASCIIString().replaceFirst("/$",""));
+                                if(!(client.getAuthentication("staffUnderwritingBearer")instanceof HttpBearerAuth bearer))throw unavailable();
+                                bearer.setBearerToken(access.getTokenValue());
                                 Client lease=new CurrentClientImpl(original,target,scopes,started,observed,access.getExpiresAt(),new StaffUnderwritingApi(client));
                                 return lease.revalidate().thenReturn(lease);
                             });
