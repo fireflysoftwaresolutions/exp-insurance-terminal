@@ -22,6 +22,7 @@ class TerminalIndependentHttpTest {
  @BeforeEach void reset(){new TerminalBoundaryHttpTest().reset();MODE.set("PERMIT");READS.set(0);MUTATIONS.set(0);AUDITS.set(0);}
  @Configuration(proxyBeanMethods=false) static class Ports {
   @Bean @Primary org.fireflyframework.security.spi.PolicyDecisionPort reviewCurrentPolicy(){return (principal,action,resource,context)->{
+    if(NativeTerminalFixtureTrust.urlAction(action))return Mono.just(NativeTerminalFixtureTrust.boundaryUrl(principal,action,resource));
     if(MODE.get().equals("PDP_TIMEOUT"))return Mono.never();
     if(MODE.get().equals("PDP_EXPIRY"))return Mono.delay(java.time.Duration.ofSeconds(3)).map(i->org.fireflyframework.security.api.domain.Decision.permit());
     return Mono.just(org.fireflyframework.security.api.domain.Decision.permit());

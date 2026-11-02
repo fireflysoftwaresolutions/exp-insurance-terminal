@@ -17,91 +17,63 @@
 
 package io.fireflysoftware.experience.insurance.terminal;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import io.fireflysoftware.security.center.core.access.SandboxPolicyAccessAdapter;
-import io.fireflysoftware.security.center.core.access.SubjectBoundAccessAdapter;
-import io.fireflysoftware.security.center.core.identity.SandboxIdentityAdapter;
-import io.fireflysoftware.security.center.interfaces.access.AccessDecision;
-import io.fireflysoftware.security.center.interfaces.access.AccessRequest;
-import io.fireflysoftware.security.center.interfaces.identity.IdentityRequest;
-import io.fireflysoftware.security.center.interfaces.identity.Subject;
-import org.springframework.core.io.DefaultResourceLoader;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * HTTP stand-in that delegates to the security center sandbox identity and access adapters.
- * Allow and deny are the shipped policy, not a second grant table.
- */
+/** Controlled SDK protocol responses for Terminal unit tests; no Security Center implementation or native grant is qualified. */
 public final class SecurityCenterSandbox implements AutoCloseable {
-
+    private static final String CUSTOMER="11111111-1111-4111-8111-111111111111";
+    private static final String DENIED="22222222-2222-4222-8222-222222222222";
+    private static final String EMPLOYEE="33333333-3333-4333-8333-333333333333";
+    private static final Map<String,String> SUBJECTS=Map.of("sample-journey",CUSTOMER,"denied-actor",DENIED,"sample-employee",EMPLOYEE);
     private final HttpServer server;
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final List<String> accessBodies = new CopyOnWriteArrayList<>();
+    private final ObjectMapper mapper=new ObjectMapper();
+    private final List<String> accessBodies=new CopyOnWriteArrayList<>();
     public final String baseUrl;
 
-    public SecurityCenterSandbox() throws IOException {
-        SandboxIdentityAdapter identity = new SandboxIdentityAdapter();
-        SubjectBoundAccessAdapter access = new SubjectBoundAccessAdapter(identity,
-                new SandboxPolicyAccessAdapter(new DefaultResourceLoader(), SandboxPolicyAccessAdapter.DEFAULT_LOCATION));
-        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/api/v1/identity/subjects", exchange -> identity(exchange, identity));
-        server.createContext("/api/v1/access/checks", exchange -> access(exchange, access));
-        server.start();
-        baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+    public SecurityCenterSandbox()throws IOException{
+        server=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0);
+        server.createContext("/api/v1/identity/subjects",this::identity);
+        server.createContext("/api/v1/access/checks",this::access);
+        server.start();baseUrl="http://127.0.0.1:"+server.getAddress().getPort();
     }
-
-    public List<String> accessBodies() {
-        return List.copyOf(accessBodies);
+    public List<String> accessBodies(){return List.copyOf(accessBodies);}
+    private void identity(HttpExchange exchange)throws IOException{
+        JsonNode request=mapper.readTree(body(exchange));String username=request.path("username").asText("").trim();
+        String actor=request.path("actorId").asText("").trim().toLowerCase(java.util.Locale.ROOT);
+        if(!username.isEmpty())actor=SUBJECTS.get(username);
+        if(actor==null||!SUBJECTS.containsValue(actor)){write(exchange,404,Map.of());return;}
+        write(exchange,200,Map.of("actorId",actor,"provider","sandbox","roles",List.of()));
     }
-
-    private void identity(HttpExchange exchange, SandboxIdentityAdapter identity) throws IOException {
-        IdentityRequest request = mapper.readValue(body(exchange), IdentityRequest.class);
-        boolean usernameBlank = request.getUsername() == null || request.getUsername().isBlank();
-        boolean actorBlank = request.getActorId() == null || request.getActorId().isBlank();
-        if (usernameBlank && actorBlank) {
-            write(exchange, 400, "");
-            return;
-        }
-        Subject subject = (usernameBlank ? identity.resolve(request.getActorId()) : identity.authenticate(request)).block();
-        if (subject == null) {
-            write(exchange, 404, "");
-            return;
-        }
-        write(exchange, 200, mapper.writeValueAsString(subject));
+    private void access(HttpExchange exchange)throws IOException{
+        String raw=body(exchange);accessBodies.add(raw);JsonNode request=mapper.readTree(raw);
+        String actor=request.path("actorId").asText(),action=request.path("action").asText(),type=request.path("resourceType").asText(),id=request.path("resourceId").asText();
+        String reason;
+        if(actor.isBlank()||action.isBlank()||type.isBlank()||id.isBlank())reason="REQUEST_INCOMPLETE";
+        else if(!SUBJECTS.containsValue(actor))reason="ACTOR_UNKNOWN";
+        else if(actor.equals(DENIED))reason="ACTOR_NOT_ENTITLED";
+        else if(actor.equals(CUSTOMER))reason=action.equals("READ")?(type.equals("POLICY")&&id.equals(InsuranceArea.POLICY.primaryId().toString())?"CONTROLLED_TEST_PROTOCOL_GRANT":"RESOURCE_NOT_GRANTED"):"ACTION_NOT_GRANTED";
+        else if(action.equals("IMPERSONATE"))reason=type.equals("PARTY")&&id.equals(InsuranceSamples.CUSTOMER_PARTY.toString())?"CONTROLLED_TEST_PROTOCOL_GRANT":"RESOURCE_NOT_GRANTED";
+        else if(!Set.of("READ","ADMINISTER").contains(action))reason="ACTION_NOT_GRANTED";
+        else reason=java.util.Arrays.stream(InsuranceArea.values()).anyMatch(area->area.accessType().equals(type)&&area.primaryId().toString().equals(id))?"CONTROLLED_TEST_PROTOCOL_GRANT":"RESOURCE_NOT_GRANTED";
+        write(exchange,200,Map.of("allowed",reason.equals("CONTROLLED_TEST_PROTOCOL_GRANT"),"reasonCode",reason));
     }
-
-    private void access(HttpExchange exchange, SubjectBoundAccessAdapter access) throws IOException {
-        String raw = body(exchange);
-        accessBodies.add(raw);
-        AccessRequest request = mapper.readValue(raw, AccessRequest.class);
-        AccessDecision decision = access.decide(request).block();
-        write(exchange, 200, mapper.writeValueAsString(decision));
+    private static String body(HttpExchange exchange)throws IOException{
+        if(!exchange.getRequestMethod().equals("POST"))throw new IOException("Controlled SDK fixture requires POST");
+        try(var input=exchange.getRequestBody()){byte[] raw=input.readNBytes(32769);if(raw.length==0||raw.length>32768)throw new IOException("Bounded controlled SDK request required");return new String(raw,StandardCharsets.UTF_8);}
     }
-
-    private static String body(HttpExchange exchange) throws IOException {
-        try (InputStream input = exchange.getRequestBody()) {
-            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
-        }
+    private void write(HttpExchange exchange,int status,Object value)throws IOException{
+        byte[] bytes=mapper.writeValueAsBytes(value);exchange.getResponseHeaders().set("Content-Type","application/json");exchange.sendResponseHeaders(status,bytes.length);
+        try(var out=exchange.getResponseBody()){out.write(bytes);}exchange.close();
     }
-
-    private static void write(HttpExchange exchange, int status, String body) throws IOException {
-        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
-        exchange.sendResponseHeaders(status, bytes.length);
-        exchange.getResponseBody().write(bytes);
-        exchange.close();
-    }
-
-    @Override
-    public void close() {
-        server.stop(0);
-    }
+    @Override public void close(){server.stop(0);}
 }

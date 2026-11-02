@@ -69,6 +69,7 @@ class TerminalBoundaryHttpTest {
     p.add("firefly.terminal.security.issuer",()->ISSUER);
     p.add("firefly.terminal.security.audience",()->"staff-insurance");
     p.add("firefly.terminal.security.jwk-set-uri",()->"http://127.0.0.1:"+JWKS.getAddress().getPort()+"/jwks");
+    NativeTerminalFixtureTrust.properties(p,ISSUER,"staff-insurance","http://127.0.0.1:"+JWKS.getAddress().getPort()+"/jwks");
   }
   @AfterAll static synchronized void stop(){if(JWKS!=null){JWKS.stop(0);JWKS=null;}}
   @LocalServerPort int port;
@@ -80,6 +81,7 @@ class TerminalBoundaryHttpTest {
   static class Application {
     @Bean PolicyDecisionPort currentPolicy() {
       return (principal, action, resource, context) -> {
+        if(NativeTerminalFixtureTrust.urlAction(action))return Mono.just(NativeTerminalFixtureTrust.boundaryUrl(principal,action,resource));
         POLICY_CALLS.add(Map.of("action",action,"resource",resource,"context",context,"principal",principal));
         if("error".equals(POLICY_FAILURE.get())) return Mono.error(new IllegalStateException("synthetic-internal-detail"));
         return Mono.justOrEmpty(DECISION.get());
@@ -188,7 +190,8 @@ class TerminalBoundaryHttpTest {
         Map.of("exp",Date.from(Instant.now().minusSeconds(300))),Map.of("staff_actor_id","missing"),
         Map.of("tenant_id","missing"),Map.of("staff_actor_id","not-a-uuid"),Map.of("sub",""))) {
       var response=signed("GET","/api/v1/staff/masters/CURRENCY",null,token(override),ACTOR.toString());
-      assertEquals(401,response.statusCode(),override+" "+response.body());
+      int expected=override.equals(Map.of("sub",""))?403:401;
+      assertEquals(expected,response.statusCode(),override+" "+response.body());
     }
     assertEquals(0,IDENTITIES.get()); assertEquals(0,ACCESS.get()); assertTrue(POLICY_CALLS.isEmpty());
   }

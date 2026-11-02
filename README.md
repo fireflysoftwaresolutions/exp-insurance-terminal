@@ -13,6 +13,8 @@ Experience API for employee access to underwriting, policies, claims, financials
 
 [Platform documentation](https://docs.fireflysoftware.io/) · [Source reference](docs/openplatform/reference.md) · [Source inventory](docs/openplatform/source-inventory.json)
 
+[Governed staff underwriting](docs/governed-staff-underwriting.md) describes the real Domain delegation, original-action recovery, configuration, and current integration limits.
+
 ## Purpose, scope, and readiness
 
 This service presents employee access to underwriting, policies, claims, financials, and supporting insurance administration to a channel. It coordinates domain calls and channel-facing request/response types while keeping business record ownership in the corresponding core services.

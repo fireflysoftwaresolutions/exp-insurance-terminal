@@ -16,7 +16,11 @@ class TerminalPackagedStartupIT {
     var process=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java").toString(),
         "-Xmx192m","-XX:MaxMetaspaceSize=192m","-jar",jar.toString(),
         "--server.address=127.0.0.1","--server.port=0","--spring.jmx.enabled=false",
-        "--firefly.eda.enabled=false","--firefly.stepevents.enabled=false")
+        "--firefly.eda.enabled=false","--firefly.stepevents.enabled=false",
+        "--firefly.cache.enabled=false","--firefly.cache.postgres.enabled=false","--firefly.web.idempotency.enabled=false",
+        "--firefly.security.resource-server.permit-matchers[0]=/actuator/health",
+        "--firefly.security.resource-server.permit-matchers[1]=/v3/api-docs",
+        "--firefly.security.resource-server.permit-matchers[2]=/v3/api-docs.yaml")
         .redirectErrorStream(true).redirectOutput(log.toFile()).start();
     try {
       int port=0;var deadline=Instant.now().plusSeconds(45);

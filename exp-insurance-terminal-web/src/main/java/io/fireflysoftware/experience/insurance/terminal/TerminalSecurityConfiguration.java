@@ -15,53 +15,60 @@
  */
 package io.fireflysoftware.experience.insurance.terminal;
 
+import io.fireflysoftware.experience.insurance.terminal.security.impl.ScopedStaffBearerWebFilterImpl;
 import java.time.Clock;
 import org.fireflyframework.security.core.context.PrincipalFactory;
 import org.fireflyframework.security.rs.AccessTokenValidators;
 import org.fireflyframework.security.spi.*;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.web.server.*;
 import org.springframework.security.oauth2.jwt.*;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.web.server.WebFilter;
 import reactor.core.publisher.Mono;
 
+/** Private legacy receiver authentication leaves the native global chain and decoder configured independently. */
 @Configuration(proxyBeanMethods=false)
 public class TerminalSecurityConfiguration {
   @Bean
-  ReactiveJwtDecoder terminalJwtDecoder(
+  @Order(-50)
+  WebFilter terminalSecurity(ObjectProvider<PrincipalFactory> principals,
+      ObjectProvider<SecurityContextPort> contexts,ObjectProvider<PolicyDecisionPort> policies,
       @Value("${firefly.terminal.security.issuer:}") String issuer,
       @Value("${firefly.terminal.security.audience:}") String audience,
-      @Value("${firefly.terminal.security.jwk-set-uri:}") String jwks) {
-    if (issuer.isBlank() || audience.isBlank() || jwks.isBlank())
-      return token -> Mono.error(new BadJwtException("Staff trust is not configured"));
-    var decoder=NimbusReactiveJwtDecoder.withJwkSetUri(jwks).build();
-    decoder.setJwtValidator(AccessTokenValidators.forIssuerAndAudience(issuer,audience));
-    return decoder;
-  }
-
-  @Bean
-  @Order(-100)
-  SecurityWebFilterChain terminalSecurity(ServerHttpSecurity http, ReactiveJwtDecoder decoder,
-      PrincipalFactory principals, SecurityContextPort contexts, PolicyDecisionPort policies,
+      @Value("${firefly.terminal.security.jwk-set-uri:}") String jwks,
       @Value("${firefly.security.resource-server.strict-policy:false}") boolean strictPolicy) {
     var clock=Clock.systemUTC();
-    var authentication=new TerminalAuthentication(principals,clock);
-    return http.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-        .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-        .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-        .logout(ServerHttpSecurity.LogoutSpec::disable)
-        .authorizeExchange(exchanges -> exchanges
-          .pathMatchers(HttpMethod.GET,"/v3/api-docs","/v3/api-docs.yaml","/v3/api-docs/**","/actuator/health").permitAll()
-          .pathMatchers("/api/v1/staff","/api/v1/staff/**").authenticated()
-          .anyExchange().denyAll())
-        .oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt.jwtDecoder(decoder)
-          .jwtAuthenticationConverter(token -> authentication.convert(token).cast(AbstractAuthenticationToken.class))))
-        .addFilterBefore(new TerminalAccessFilterImpl(contexts,policies,clock,strictPolicy),SecurityWebFiltersOrder.AUTHORIZATION)
-        .build();
+    ServerWebExchangeMatcher routes=exchange->{
+      String path=exchange.getRequest().getPath().pathWithinApplication().value();
+      return legacy(path)?ServerWebExchangeMatcher.MatchResult.match():ServerWebExchangeMatcher.MatchResult.notMatch();
+    };
+    var receiver=new ScopedStaffBearerWebFilterImpl(routes,decoder(issuer,audience,jwks),jwt->{
+      var factory=principals.getIfAvailable();
+      if(factory==null)return Mono.error(new BadJwtException("Native staff principal projection is not configured"));
+      return new TerminalAuthentication(factory,clock).convert(jwt).cast(AbstractAuthenticationToken.class);
+    });
+    return (exchange,chain)->receiver.filter(exchange,authenticated->{
+      if(!legacy(authenticated.getRequest().getPath().pathWithinApplication().value()))return chain.filter(authenticated);
+      var context=contexts.getIfAvailable();var policy=policies.getIfAvailable();
+      if(context==null||policy==null){authenticated.getResponse().setStatusCode(HttpStatus.FORBIDDEN);return authenticated.getResponse().setComplete();}
+      return new TerminalAccessFilterImpl(context,policy,clock,strictPolicy).filter(authenticated,chain);
+    });
+  }
+
+  private static boolean legacy(String path) {
+    return (path.equals("/api/v1/staff")||path.startsWith("/api/v1/staff/"))
+        &&!path.equals("/api/v1/staff/underwriting")&&!path.startsWith("/api/v1/staff/underwriting/");
+  }
+
+  private static ReactiveJwtDecoder decoder(String issuer,String audience,String jwks) {
+    if(issuer.isBlank()||audience.isBlank()||jwks.isBlank())
+      return token->Mono.error(new BadJwtException("Staff trust is not configured"));
+    var decoder=NimbusReactiveJwtDecoder.withJwkSetUri(jwks).build();
+    decoder.setJwtValidator(AccessTokenValidators.forIssuerAndAudience(issuer,audience));return decoder;
   }
 }

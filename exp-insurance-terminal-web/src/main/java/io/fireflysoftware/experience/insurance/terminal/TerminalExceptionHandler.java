@@ -30,4 +30,11 @@ public class TerminalExceptionHandler {
     public ResponseEntity<Map<String, String>> denied(TerminalDeniedException error) {
         return ResponseEntity.status(403).body(Map.of("reasonCode", error.reasonCode()));
     }
+    @ExceptionHandler(RecordOutcomeUnknownException.class)
+    public ResponseEntity<Map<String, String>> unknown(RecordOutcomeUnknownException error) {
+        return ResponseEntity.status(503).body(Map.of("outcome", "OUTCOME_UNKNOWN",
+                "recordId", error.originalRequest().recordId().toString(),
+                "transportRequestKey", error.transportRequestKey()));
+    }
+
 }

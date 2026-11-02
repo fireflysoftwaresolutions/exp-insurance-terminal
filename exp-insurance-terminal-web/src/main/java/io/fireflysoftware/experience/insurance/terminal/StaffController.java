@@ -34,6 +34,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.fireflyframework.security.api.domain.SecurityPrincipal;
+import org.fireflyframework.web.idempotency.annotation.DisableIdempotency;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.UUID;
 
@@ -49,6 +50,7 @@ public class StaffController {
         this.terminal = terminal;
     }
 
+    @DisableIdempotency
     @Operation(operationId = "signIn", tags = "Staff Terminal")
     @PostMapping("/sessions")
     public Mono<StaffSession> signIn(
@@ -58,18 +60,21 @@ public class StaffController {
                 TerminalAuthentication.uuid(principal.attributes().get("staffActorId"))));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "listRecords", tags = "Staff Terminal")
     @GetMapping("/records/{area}")
     public Flux<StaffRecord> list(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area) {
         return terminal.list(actorId, InsuranceArea.fromName(area));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "openRecord", tags = "Staff Terminal")
     @GetMapping("/records/{area}/{recordId}")
     public Mono<StaffRecord> open(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId) {
         return terminal.open(actorId, InsuranceArea.fromName(area), recordId);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "updateRecord", tags = "Staff Terminal")
     @PutMapping("/records/{area}/{recordId}")
     public Mono<StaffRecord> update(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -77,6 +82,7 @@ public class StaffController {
         return terminal.update(actorId, body.command(InsuranceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "closeRecord", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/close")
     public Mono<StaffRecord> close(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -84,6 +90,7 @@ public class StaffController {
         return terminal.close(actorId, body.command(InsuranceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "removeDraft", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/remove")
     public Mono<Void> removeDraft(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -91,6 +98,7 @@ public class StaffController {
         return terminal.removeDraft(actorId, body.command(InsuranceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "decideRecord", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/decide")
     public Mono<StaffRecord> decide(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -98,6 +106,7 @@ public class StaffController {
         return terminal.decide(actorId, body.command(InsuranceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "attachDistributor", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/distributor")
     public Mono<StaffRecord> attach(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -105,12 +114,14 @@ public class StaffController {
         return terminal.attachDistributor(actorId, body.command(InsuranceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "listDistributors", tags = "Staff Terminal")
     @GetMapping("/distributors")
     public Flux<DistributorView> distributors(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId) {
         return terminal.distributors(actorId);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "putProperty", tags = "Staff Terminal")
     @PutMapping("/configuration/{key}")
     public Mono<String> putProperty(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String key,
@@ -118,6 +129,7 @@ public class StaffController {
         return terminal.putProperty(actorId, key, body.value());
     }
 
+    @DisableIdempotency
     @Operation(operationId = "listMasters", tags = "Staff Terminal")
     @GetMapping("/masters/{type}")
     public Flux<MasterRecord> masters(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String type) {

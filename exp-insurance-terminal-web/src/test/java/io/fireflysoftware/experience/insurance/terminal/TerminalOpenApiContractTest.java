@@ -12,7 +12,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(classes=TerminalBoundaryHttpTest.Application.class,
     webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties={"server.address=127.0.0.1","firefly.eda.enabled=false","firefly.stepevents.enabled=false"})
+    properties={"server.address=127.0.0.1","firefly.eda.enabled=false","firefly.stepevents.enabled=false",
+      "firefly.security.resource-server.permit-matchers[0]=/v3/api-docs"})
 class TerminalOpenApiContractTest {
   @LocalServerPort int port;
   @Test void nativeProducerRetainsHistoricSdkNamesAndPublishesBearerTrust() throws Exception {

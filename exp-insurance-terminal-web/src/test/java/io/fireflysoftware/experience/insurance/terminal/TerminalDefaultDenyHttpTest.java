@@ -43,13 +43,20 @@ class TerminalDefaultDenyHttpTest {
     p.add("firefly.terminal.security.issuer",()->"https://synthetic.default.invalid");
     p.add("firefly.terminal.security.audience",()->"staff-insurance");
     p.add("firefly.terminal.security.jwk-set-uri",()->"http://127.0.0.1:"+JWKS.getAddress().getPort()+"/jwks");
+    NativeTerminalFixtureTrust.properties(p,"https://synthetic.default.invalid","staff-insurance","http://127.0.0.1:"+JWKS.getAddress().getPort()+"/jwks");
   }
   @AfterAll static void stop(){JWKS.stop(0);}
   @BeforeEach void reset(){EFFECTS.set(0);}
   @LocalServerPort int port;
   @SpringBootConfiguration @EnableAutoConfiguration
   @Import({TerminalSecurityConfiguration.class,Probe.class})
-  static class Application{}
+  static class Application{
+    @org.springframework.context.annotation.Bean
+    org.fireflyframework.security.core.policy.PolicyRule controlledNativeUrl(){return (principal,action,resource,context)->reactor.core.publisher.Mono.just(
+      NativeTerminalFixtureTrust.signed(principal,"https://synthetic.default.invalid","44444444-4444-4444-8444-444444444444")
+      &&action.equals("GET")&&resource.equals("/api/v1/staff/probe")
+        ?org.fireflyframework.security.api.domain.Decision.permit():org.fireflyframework.security.api.domain.Decision.deny("Controlled URL or legacy operation refused"));}
+  }
   @RestController static class Probe{
     @GetMapping({"/api/v1/staff/probe","/unclassified-probe"}) String get(){EFFECTS.incrementAndGet();return "must-not-run";}
   }

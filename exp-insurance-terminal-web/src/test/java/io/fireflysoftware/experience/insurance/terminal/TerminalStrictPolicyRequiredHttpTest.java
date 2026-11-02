@@ -32,6 +32,6 @@ class TerminalStrictPolicyRequiredHttpTest extends TerminalStrictPolicyGuardFixt
 
 @SpringBootTest(classes=TerminalBoundaryHttpTest.Application.class,
     webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties={"server.address=127.0.0.1","spring.config.location=optional:classpath:/no-terminal-config.yaml",
+    properties={"server.address=127.0.0.1","spring.application.name=controlled-missing-strict-terminal","spring.config.location=optional:classpath:/no-terminal-config.yaml",
       "firefly.eda.enabled=false","firefly.stepevents.enabled=false"})
 class TerminalMissingStrictPolicyHttpTest extends TerminalStrictPolicyGuardFixture {}

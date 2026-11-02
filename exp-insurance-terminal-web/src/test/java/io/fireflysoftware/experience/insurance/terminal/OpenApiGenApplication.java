@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Profile;
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @Profile("openapi-gen")
-@Import({StaffController.class, TerminalWiring.class, TerminalExceptionHandler.class,
+@Import({StaffController.class, io.fireflysoftware.experience.insurance.terminal.staff.StaffUnderwritingController.class,
+    TerminalWiring.class, TerminalExceptionHandler.class,
     TerminalSecurityConfiguration.class})
 public class OpenApiGenApplication {
   public static void main(String[] args) {
