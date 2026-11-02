@@ -103,3 +103,10 @@ The generated `staffBearer` authentication supplies the bearer header. `username
 - **Business/provider uncertainty:** follow the owning domain/core operation's retained action, lookup and reconciliation contract. A terminal record response does not establish booking, settlement, coverage binding or accounting completion.
 
 Anonymous access is limited to the configured GET health/OpenAPI routes. Unclassified paths deny. Keep deployment exposure, issuer key rotation, policy changes and business-provider replacement under the institution's operational configuration.
+## Current submission record read
+
+The existing generated `StaffTerminalApi.openRecord(actorId, "SUBMISSION", recordId)` operation now calls the genuine Domain `UnderwritingApi.get` through the current registered staff exchange. The exact scope is `insurance:underwriting:submissions:read`. The optional actor header must match the current authenticated staff UUID when supplied; duplicate, blank, or mismatched values are refused before delegation.
+
+Enable `insurance.terminal.staff-client.submission-read.enabled` and explicitly configure `insurance.terminal.staff-client.submission-read.resource-tenant-id` alongside the existing staff client settings. Domain must enable the matching current reader, and Core must have its dedicated read-only database role and current Configuration binding. Missing configuration fails with 503. There is no submission fallback to the in-memory record port.
+
+The response maps the actual owner submission identifier, party, status, reference, and distributor. It leaves actor and note absent because the submission response does not establish those fields. Terminal retains no business record and imports no Core SDK for this operation. The complete Domain producer must be regenerated using its existing generator so the existing submission GET requires `staffUnderwritingBearer`. Other legacy terminal operations and in-memory audit paths remain separate work; this read does not establish their acceptance.

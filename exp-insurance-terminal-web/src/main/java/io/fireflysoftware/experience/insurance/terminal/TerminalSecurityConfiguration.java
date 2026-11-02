@@ -45,7 +45,7 @@ public class TerminalSecurityConfiguration {
     var clock=Clock.systemUTC();
     ServerWebExchangeMatcher routes=exchange->{
       String path=exchange.getRequest().getPath().pathWithinApplication().value();
-      return legacy(path)?ServerWebExchangeMatcher.MatchResult.match():ServerWebExchangeMatcher.MatchResult.notMatch();
+      return legacy(exchange.getRequest().getMethod(),path)?ServerWebExchangeMatcher.MatchResult.match():ServerWebExchangeMatcher.MatchResult.notMatch();
     };
     var receiver=new ScopedStaffBearerWebFilterImpl(routes,decoder(issuer,audience,jwks),jwt->{
       var factory=principals.getIfAvailable();
@@ -53,15 +53,16 @@ public class TerminalSecurityConfiguration {
       return new TerminalAuthentication(factory,clock).convert(jwt).cast(AbstractAuthenticationToken.class);
     });
     return (exchange,chain)->receiver.filter(exchange,authenticated->{
-      if(!legacy(authenticated.getRequest().getPath().pathWithinApplication().value()))return chain.filter(authenticated);
+      if(!legacy(authenticated.getRequest().getMethod(),authenticated.getRequest().getPath().pathWithinApplication().value()))return chain.filter(authenticated);
       var context=contexts.getIfAvailable();var policy=policies.getIfAvailable();
       if(context==null||policy==null){authenticated.getResponse().setStatusCode(HttpStatus.FORBIDDEN);return authenticated.getResponse().setComplete();}
       return new TerminalAccessFilterImpl(context,policy,clock,strictPolicy).filter(authenticated,chain);
     });
   }
 
-  private static boolean legacy(String path) {
-    return (path.equals("/api/v1/staff")||path.startsWith("/api/v1/staff/"))
+  private static boolean legacy(org.springframework.http.HttpMethod method,String path) {
+    return !(org.springframework.http.HttpMethod.GET.equals(method)&&path.matches("/api/v1/staff/records/SUBMISSION/[^/]+"))
+        &&(path.equals("/api/v1/staff")||path.startsWith("/api/v1/staff/"))
         &&!path.equals("/api/v1/staff/underwriting")&&!path.startsWith("/api/v1/staff/underwriting/");
   }
 

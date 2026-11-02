@@ -23,7 +23,7 @@ public class StaffUnderwritingSecurityConfiguration {
     WebFilter staffUnderwritingSecurity(StaffUnderwritingSettings settings,ObjectProvider<PrincipalFactory> principals){
         ReactiveJwtDecoder decoder=settings.enabled()?ExchangedStaffUnderwritingClientFactoryImpl.decoder(settings,settings.experienceAudience()):
             token->Mono.error(new JwtException("STAFF underwriting trust is not configured"));
-        return new ScopedStaffBearerWebFilterImpl(ServerWebExchangeMatchers.pathMatchers("/api/v1/staff/underwriting","/api/v1/staff/underwriting/**"),decoder,token->{
+        return new ScopedStaffBearerWebFilterImpl(new org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher(ServerWebExchangeMatchers.pathMatchers("/api/v1/staff/underwriting","/api/v1/staff/underwriting/**"),ServerWebExchangeMatchers.pathMatchers(org.springframework.http.HttpMethod.GET,"/api/v1/staff/records/SUBMISSION/*")),decoder,token->{
             var factory=principals.getIfAvailable();if(factory==null)return Mono.error(new JwtException("Native STAFF principal projection is not configured"));
             return new StaffUnderwritingJwtConverterImpl(settings,factory,Clock.systemUTC()).convert(token);
         });

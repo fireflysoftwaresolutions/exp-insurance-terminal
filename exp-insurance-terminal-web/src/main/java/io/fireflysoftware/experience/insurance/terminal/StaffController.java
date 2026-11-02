@@ -46,8 +46,12 @@ public class StaffController {
 
     private final StaffTerminal terminal;
 
-    public StaffController(StaffTerminal terminal) {
+    private final org.springframework.beans.factory.ObjectProvider<io.fireflysoftware.experience.insurance.terminal.staff.CurrentStaffSubmissionReader> currentReads;
+
+    public StaffController(StaffTerminal terminal,
+            org.springframework.beans.factory.ObjectProvider<io.fireflysoftware.experience.insurance.terminal.staff.CurrentStaffSubmissionReader> currentReads) {
         this.terminal = terminal;
+        this.currentReads = currentReads;
     }
 
     @DisableIdempotency
@@ -70,8 +74,22 @@ public class StaffController {
     @DisableIdempotency
     @Operation(operationId = "openRecord", tags = "Staff Terminal")
     @GetMapping("/records/{area}/{recordId}")
-    public Mono<StaffRecord> open(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId) {
-        return terminal.open(actorId, InsuranceArea.fromName(area), recordId);
+    public Mono<StaffRecord> open(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId,
+            @Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String authorization,
+            @Parameter(hidden = true) @AuthenticationPrincipal SecurityPrincipal principal,
+            @Parameter(hidden = true) @RequestHeader org.springframework.http.HttpHeaders headers) {
+        var selected=InsuranceArea.fromName(area);
+        if(selected!=InsuranceArea.SUBMISSION)return terminal.open(actorId,selected,recordId);
+        var suppliedActor=headers.get("X-Actor-Id");
+        if(principal==null||suppliedActor!=null&&(suppliedActor.size()!=1||actorId==null||!actorId.toString().equals(principal.attributes().get("staffActorId"))))
+            return Mono.error(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,"Current staff actor required"));
+        var reader=currentReads.getIfAvailable();
+        if(reader==null)return Mono.error(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,"Current submission read is not configured"));
+        return reader.read(authorization,recordId).map(row->{
+            if(row.getSubmissionStatus()==null||row.getPartyId()==null||row.getSubmissionNumber()==null||row.getSubmissionNumber().isBlank())
+                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,"Complete owner submission read unavailable");
+            return new StaffRecord(row.getSubmissionId(),InsuranceArea.SUBMISSION.name(),row.getPartyId(),null,row.getSubmissionStatus().getValue(),row.getSubmissionNumber(),row.getDistributorId(),null);
+        });
     }
 
     @DisableIdempotency

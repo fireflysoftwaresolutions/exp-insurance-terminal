@@ -100,7 +100,7 @@ class StaffTerminalWholeOpenApiContractTest {
             assertEquals("validated-hosted-manual-main-v1",System.getProperty("owned.insurance.terminal-sdk-boundary.hosted"));
             var root=Path.of(System.getProperty("owned.insurance.terminal-sdk-boundary.root")).normalize();
             assertTrue(root.isAbsolute());assertEquals(root,root.toRealPath());assertEquals(Path.of("..").toRealPath(),root);
-            assertEquals(Path.of(System.getProperty("owned.insurance.terminal-sdk-boundary.workspace"),"qualification","insurance-terminal-staff-source-chain","exp-insurance-terminal").toRealPath(),root);
+            assertEquals(Path.of(System.getProperty("owned.insurance.terminal-sdk-boundary.workspace"),"qualification","underwriting-staff-source-chain","exp-insurance-terminal").toRealPath(),root);
             canonical=root.resolve("exp-insurance-terminal-sdk/src/main/resources/openapi.yml");
             assertTrue(Files.isRegularFile(canonical,LinkOption.NOFOLLOW_LINKS));assertEquals(canonical,canonical.toRealPath());
             assertEquals(System.getProperty("owned.insurance.terminal-sdk-boundary.preimage-sha256"),HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(canonical))));
