@@ -28,6 +28,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Reads and updates policies, claims, and submissions through their domain SDKs.
@@ -57,11 +60,11 @@ public final class DomainRecordClientImpl implements StaffRecordPort {
         String idempotency = key();
         return switch (insurance) {
             case POLICY -> policies(insurance).get(recordId, idempotency)
-                    .map(dto -> policyRecord(dto, recordId, null));
+                    .map(dto -> policyRecord(dto, recordId));
             case CLAIM -> claims(insurance).get(recordId, idempotency)
-                    .map(dto -> claimRecord(dto, recordId, null));
+                    .map(dto -> claimRecord(dto, recordId));
             case SUBMISSION -> underwriting(insurance).get(recordId, idempotency)
-                    .map(dto -> submissionRecord(dto, recordId, null));
+                    .map(dto -> submissionRecord(dto, recordId));
         };
     }
 
@@ -75,22 +78,25 @@ public final class DomainRecordClientImpl implements StaffRecordPort {
         return switch (area) {
             case POLICY -> {
                 PoliciesApi api = policies(area);
+                String requestKey = key();
                 yield api.get(recordId, key())
-                        .flatMap(current -> api.update(recordId, current, key()))
-                        .map(written -> policyRecord(written, recordId, command));
+                        .flatMap(current -> mutation(command, requestKey, api.update(recordId, current, requestKey),
+                                written -> policyRecord(written, recordId)));
             }
             case CLAIM -> {
                 ClaimsApi api = claims(area);
+                String requestKey = key();
                 yield api.get(recordId, key())
-                        .flatMap(current -> api.update(recordId, current, key()))
-                        .map(written -> claimRecord(written, recordId, command));
+                        .flatMap(current -> mutation(command, requestKey, api.update(recordId, current, requestKey),
+                                written -> claimRecord(written, recordId)));
             }
             case SUBMISSION -> {
                 UnderwritingApi api = underwriting(area);
+                String requestKey = key();
                 yield api.get(recordId, key())
                         .map(current -> applySubmission(current, command))
-                        .flatMap(current -> api.update(recordId, current, key()))
-                        .map(written -> submissionRecord(written, recordId, command));
+                        .flatMap(current -> mutation(command, requestKey, api.update(recordId, current, requestKey),
+                                written -> submissionRecord(written, recordId)));
             }
         };
     }
@@ -103,12 +109,14 @@ public final class DomainRecordClientImpl implements StaffRecordPort {
         }
         UUID recordId = command.recordId();
         String idempotency = key();
-        Mono<?> call = switch (area) {
-            case POLICY -> policies(area).cancel(recordId, policyReason(command), idempotency);
-            case CLAIM -> claims(area).close(recordId, claimReason(command), idempotency);
-            case SUBMISSION -> underwriting(area).withdraw(recordId, submissionReason(command), idempotency);
+        return switch (area) {
+            case POLICY -> mutation(command, idempotency, policies(area).cancel(recordId, policyReason(command), idempotency),
+                    dto -> policyRecord(dto, recordId));
+            case CLAIM -> mutation(command, idempotency, claims(area).close(recordId, claimReason(command), idempotency),
+                    dto -> claimRecord(dto, recordId));
+            case SUBMISSION -> mutation(command, idempotency, underwriting(area).withdraw(recordId, submissionReason(command), idempotency),
+                    dto -> submissionRecord(dto, recordId));
         };
-        return call.thenReturn(commanded(command, command.status()));
     }
 
     @Override
@@ -136,12 +144,13 @@ public final class DomainRecordClientImpl implements StaffRecordPort {
         InsuranceArea area = insurance(command.area());
         UUID recordId = command.recordId();
         String idempotency = key();
-        Mono<?> call = switch (area.decideMode()) {
-            case DENY -> claims(area).deny(recordId, claimReason(command), idempotency);
-            case DECLINE -> underwriting(area).decline(recordId, submissionReason(command), idempotency);
+        return switch (area.decideMode()) {
+            case DENY -> mutation(command, idempotency, claims(area).deny(recordId, claimReason(command), idempotency),
+                    dto -> claimRecord(dto, recordId));
+            case DECLINE -> mutation(command, idempotency, underwriting(area).decline(recordId, submissionReason(command), idempotency),
+                    dto -> submissionRecord(dto, recordId));
             case APPROVE_OR_REJECT, NONE -> Mono.error(new TerminalDeniedException("DECISION_NOT_APPLICABLE"));
         };
-        return call.thenReturn(commanded(command, SandboxRecordBookImpl.decisionStatus(command)));
     }
 
     private PoliciesApi policies(InsuranceArea area) {
@@ -202,30 +211,48 @@ public final class DomainRecordClientImpl implements StaffRecordPort {
                 .statusReason(command.reason() == null ? "" : command.reason());
     }
 
-    private static StaffRecord policyRecord(PolicyDTO policy, UUID recordId, RecordCommand command) {
-        String status = policy.getPolicyStatus() == null ? "" : policy.getPolicyStatus().getValue();
-        StaffRecord record = new StaffRecord(recordId, InsuranceArea.POLICY.name(), null, null, status,
+    private static StaffRecord policyRecord(PolicyDTO policy, UUID recordId) {
+        String status = policy.getPolicyStatus() == null ? null : policy.getPolicyStatus().getValue();
+        requireOwnerRecord(policy.getPolicyId(), recordId, status);
+        return new StaffRecord(policy.getPolicyId(), InsuranceArea.POLICY.name(), null, null, status,
                 policy.getPolicyNumber(), null, null);
-        return command == null ? record : record.withUpdate(command);
     }
 
-    private static StaffRecord claimRecord(ClaimDTO claim, UUID recordId, RecordCommand command) {
-        String status = claim.getClaimStatus() == null ? "" : claim.getClaimStatus().getValue();
-        StaffRecord record = new StaffRecord(recordId, InsuranceArea.CLAIM.name(), null, null, status,
+    private static StaffRecord claimRecord(ClaimDTO claim, UUID recordId) {
+        String status = claim.getClaimStatus() == null ? null : claim.getClaimStatus().getValue();
+        requireOwnerRecord(claim.getClaimId(), recordId, status);
+        return new StaffRecord(claim.getClaimId(), InsuranceArea.CLAIM.name(), null, null, status,
                 claim.getClaimNumber(), null, null);
-        return command == null ? record : record.withUpdate(command);
     }
 
-    private static StaffRecord submissionRecord(SubmissionDTO submission, UUID recordId, RecordCommand command) {
-        String status = submission.getSubmissionStatus() == null ? "" : submission.getSubmissionStatus().getValue();
-        StaffRecord record = new StaffRecord(recordId, InsuranceArea.SUBMISSION.name(), submission.getPartyId(), null, status,
+    private static StaffRecord submissionRecord(SubmissionDTO submission, UUID recordId) {
+        String status = submission.getSubmissionStatus() == null ? null : submission.getSubmissionStatus().getValue();
+        requireOwnerRecord(submission.getSubmissionId(), recordId, status);
+        return new StaffRecord(submission.getSubmissionId(), InsuranceArea.SUBMISSION.name(), submission.getPartyId(), null, status,
                 submission.getSubmissionNumber(), submission.getDistributorId(), null);
-        return command == null ? record : record.withUpdate(command);
     }
 
-    private static StaffRecord commanded(RecordCommand command, String status) {
-        return new StaffRecord(command.recordId(), command.area().name(), command.customerPartyId(), command.actorId(),
-                status, command.reason(), command.distributorId(), command.note());
+    private static void requireOwnerRecord(UUID actual, UUID expected, String status) {
+        if (!expected.equals(actual) || status == null || status.isBlank()) {
+            throw new IllegalStateException("Matching complete owner record required");
+        }
+    }
+
+    private static <T> Mono<StaffRecord> mutation(RecordCommand original, String requestKey, Mono<T> invocation,
+                                                Function<T, StaffRecord> mapping) {
+        return invocation.map(mapping)
+                .switchIfEmpty(Mono.error(new RecordOutcomeUnknownException(original, requestKey)))
+                .onErrorMap(error -> {
+                    if (error instanceof RecordOutcomeUnknownException) {
+                        return error;
+                    }
+                    if (error instanceof WebClientResponseException response
+                            && java.util.Set.of(400, 401, 403, 404, 409, 422).contains(response.getStatusCode().value())) {
+                        return new org.springframework.web.server.ResponseStatusException(response.getStatusCode(),
+                                "Current owner invocation refused");
+                    }
+                    return new RecordOutcomeUnknownException(original, requestKey);
+                });
     }
 
     private static String key() {
