@@ -47,7 +47,7 @@ class DomainConfigurationClientTest {
 
     @Test
     void readsAndWritesConfigurationAndReferenceDataThroughTheDomainSdks() {
-        DomainConfigurationClient client = new DomainConfigurationClient(configuration, masters);
+        DomainConfigurationClientImpl client = new DomainConfigurationClientImpl(configuration, masters);
         UUID employeeId = UUID.randomUUID();
         UUID countryId = UUID.randomUUID();
         when(configuration.filterConfigs(eq(0), eq(200), any())).thenReturn(Mono.just(

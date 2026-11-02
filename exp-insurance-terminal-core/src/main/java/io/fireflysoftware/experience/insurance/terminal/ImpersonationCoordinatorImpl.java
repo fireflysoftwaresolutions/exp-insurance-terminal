@@ -25,12 +25,12 @@ import java.util.UUID;
  * Impersonation asks the security center for IMPERSONATE, then stores both ids.
  * Allow and deny come from that check. This class does not keep its own grant table.
  */
-public final class ImpersonationCoordinator implements ImpersonationPort {
+public final class ImpersonationCoordinatorImpl implements ImpersonationPort {
 
     private final AccessPort accessPort;
     private final AuditPort auditPort;
 
-    public ImpersonationCoordinator(AccessPort accessPort, AuditPort auditPort) {
+    public ImpersonationCoordinatorImpl(AccessPort accessPort, AuditPort auditPort) {
         this.accessPort = accessPort;
         this.auditPort = auditPort;
     }
@@ -41,12 +41,16 @@ public final class ImpersonationCoordinator implements ImpersonationPort {
             return Mono.error(new TerminalDeniedException("REQUEST_INCOMPLETE"));
         }
         AccessCheck check = new AccessCheck(employeeId, "IMPERSONATE", "PARTY", customerPartyId.toString());
-        return accessPort.check(check).flatMap(outcome -> {
+        return accessPort.check(check)
+                .switchIfEmpty(Mono.error(new TerminalDeniedException("ACCESS_DECISION_MISSING")))
+                .flatMap(outcome -> {
             if (!outcome.allowed()) {
                 return Mono.error(new TerminalDeniedException(outcome.reasonCode()));
             }
             AuditEntry entry = new AuditEntry(UUID.randomUUID(), employeeId, customerPartyId, reason, action, area, recordId);
-            return auditPort.append(entry);
+            return auditPort.append(entry)
+                    .filter(entry::equals)
+                    .switchIfEmpty(Mono.error(new TerminalDeniedException("IMPERSONATION_AUDIT_NOT_CONFIRMED")));
         });
     }
 }

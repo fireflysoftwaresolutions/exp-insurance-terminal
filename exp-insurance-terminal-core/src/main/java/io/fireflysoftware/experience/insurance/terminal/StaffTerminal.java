@@ -59,8 +59,23 @@ public final class StaffTerminal {
         return identity.authenticate(username)
                 .switchIfEmpty(Mono.error(new TerminalDeniedException("ACTOR_UNKNOWN")))
                 .flatMap(subject -> access.check(new AccessCheck(subject.actorId(), "ADMINISTER", anchorType, anchorResourceId))
+                        .switchIfEmpty(Mono.error(new TerminalDeniedException("ACCESS_DECISION_MISSING")))
                         .flatMap(outcome -> outcome.allowed()
                                 ? Mono.just(new StaffSession(subject.actorId(), subject.provider()))
+                                : Mono.error(new TerminalDeniedException(outcome.reasonCode()))));
+    }
+
+    /** Resolves an already authenticated staff actor; this method does not exchange credentials. */
+    public Mono<StaffSession> authenticatedSession(UUID actorId) {
+        if (actorId == null) return Mono.error(new TerminalDeniedException("REQUEST_INCOMPLETE"));
+        return identity.resolve(actorId.toString())
+                .switchIfEmpty(Mono.error(new TerminalDeniedException("ACTOR_UNKNOWN")))
+                .flatMap(subject -> actorId.equals(subject.actorId())
+                        ? Mono.just(subject) : Mono.error(new TerminalDeniedException("ACTOR_MISMATCH")))
+                .flatMap(subject -> access.check(new AccessCheck(actorId, "ADMINISTER", anchorType, anchorResourceId))
+                        .switchIfEmpty(Mono.error(new TerminalDeniedException("ACCESS_DECISION_MISSING")))
+                        .flatMap(outcome -> outcome.allowed()
+                                ? Mono.just(new StaffSession(actorId, subject.provider()))
                                 : Mono.error(new TerminalDeniedException(outcome.reasonCode()))));
     }
 
@@ -129,7 +144,8 @@ public final class StaffTerminal {
     private <T> Mono<T> customerCommand(UUID actorId, RecordCommand command, String action, Supplier<Mono<T>> domainCall) {
         return requireStaff(actorId, command.area(), command.recordId())
                 .then(Mono.defer(() -> impersonation.impersonate(actorId, command.customerPartyId(), command.reason(),
-                        action, command.area().name(), command.recordId())))
+                        action, command.area().name(), command.recordId()))
+                        .switchIfEmpty(Mono.error(new TerminalDeniedException("IMPERSONATION_NOT_CONFIRMED"))))
                 .then(Mono.defer(domainCall));
     }
 
@@ -148,7 +164,10 @@ public final class StaffTerminal {
         }
         return identity.resolve(actorId.toString())
                 .switchIfEmpty(Mono.error(new TerminalDeniedException("ACTOR_UNKNOWN")))
+                .flatMap(subject -> actorId.equals(subject.actorId())
+                        ? Mono.just(subject) : Mono.error(new TerminalDeniedException("ACTOR_MISMATCH")))
                 .flatMap(subject -> access.check(new AccessCheck(subject.actorId(), "ADMINISTER", resourceType, resourceId)))
+                .switchIfEmpty(Mono.error(new TerminalDeniedException("ACCESS_DECISION_MISSING")))
                 .flatMap(outcome -> outcome.allowed()
                         ? Mono.empty()
                         : Mono.error(new TerminalDeniedException(outcome.reasonCode())));

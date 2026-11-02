@@ -23,15 +23,15 @@ public final class TerminalFixture {
     }
 
     public static StaffTerminal insurance(String securityCenterBaseUrl) {
-        IdentityPort identity = HttpIdentityAdapter.at(securityCenterBaseUrl);
-        AccessPort access = HttpAccessAdapter.at(securityCenterBaseUrl);
-        AuditPort audit = new InMemoryAuditLog();
-        ConfigurationPort configuration = new SandboxConfigurationStore(
+        IdentityPort identity = HttpIdentityAdapterImpl.at(securityCenterBaseUrl);
+        AccessPort access = HttpAccessAdapterImpl.at(securityCenterBaseUrl);
+        AuditPort audit = new InMemoryAuditLogImpl();
+        ConfigurationPort configuration = new SandboxConfigurationStoreImpl(
                 InsuranceSamples.properties(), InsuranceSamples.currencies(), InsuranceSamples.countries());
-        StaffRecordPort records = new SandboxRecordBook(configuration, InsuranceSamples.records());
-        DistributorPort distributors = new SandboxDistributorDirectory(
+        StaffRecordPort records = new SandboxRecordBookImpl(configuration, InsuranceSamples.records());
+        DistributorPort distributors = new SandboxDistributorDirectoryImpl(
                 configuration, InsuranceArea.POLICY.channelKey(), InsuranceSamples.distributors());
-        return new StaffTerminal(identity, access, new ImpersonationCoordinator(access, audit), configuration,
+        return new StaffTerminal(identity, access, new ImpersonationCoordinatorImpl(access, audit), configuration,
                 distributors, records, audit, "POLICY", InsuranceArea.POLICY.primaryId().toString(), InsuranceArea.PREFIX);
     }
 }

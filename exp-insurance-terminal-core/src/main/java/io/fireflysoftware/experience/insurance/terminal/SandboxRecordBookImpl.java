@@ -26,14 +26,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sandbox book of domain records. Updates, closes, and draft removal change the book.
- * A deployment replaces this class with {@link DomainRecordClient}.
+ * A deployment replaces this class with {@link DomainRecordClientImpl}.
  */
-public final class SandboxRecordBook implements StaffRecordPort {
+public final class SandboxRecordBookImpl implements StaffRecordPort {
 
     private final Map<UUID, StaffRecord> records = new ConcurrentHashMap<>();
     private final ConfigurationPort configuration;
 
-    public SandboxRecordBook(ConfigurationPort configuration, ListSeed seed) {
+    public SandboxRecordBookImpl(ConfigurationPort configuration, ListSeed seed) {
         this.configuration = configuration;
         seed.records().forEach(record -> records.put(record.id(), record));
     }

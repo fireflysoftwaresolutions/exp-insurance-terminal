@@ -40,7 +40,7 @@ import java.util.UUID;
  * and records an attachment in that domain's audit log.
  * The view is read back from the domain after the audit row is stored.
  */
-public final class DomainDistributorClient implements DistributorPort {
+public final class DomainDistributorClientImpl implements DistributorPort {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Set<String> ROLES = Set.of("BROKER", "AGENCY", "COLLABORATOR");
@@ -51,7 +51,7 @@ public final class DomainDistributorClient implements DistributorPort {
     private final ConfigurationPort configuration;
     private final String channelKey;
 
-    public DomainDistributorClient(ConfigurationPort configuration,
+    public DomainDistributorClientImpl(ConfigurationPort configuration,
                                    DistributorQueryApi distributors,
                                    AgencyApi agencies,
                                    AgentApi agents,
@@ -112,7 +112,7 @@ public final class DomainDistributorClient implements DistributorPort {
     }
 
     private static Mono<Optional<UUID>> firstId(Mono<PaginationResponse> page) {
-        return page.map(DomainDistributorClient::firstId).defaultIfEmpty(Optional.empty());
+        return page.map(DomainDistributorClientImpl::firstId).defaultIfEmpty(Optional.empty());
     }
 
     private static Optional<UUID> firstId(PaginationResponse page) {

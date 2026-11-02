@@ -54,7 +54,7 @@ class StaffTerminalTest {
 
     @Test
     void customerCanReadTheSamplePolicyAndStillCannotAdminister() {
-        AccessPort access = HttpAccessAdapter.at(security.baseUrl);
+        AccessPort access = HttpAccessAdapterImpl.at(security.baseUrl);
         AccessOutcome read = access.check(new AccessCheck(CUSTOMER, "READ", "POLICY",
                 InsuranceArea.POLICY.primaryId().toString())).block();
         assertTrue(read.allowed());

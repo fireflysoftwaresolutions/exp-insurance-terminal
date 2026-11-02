@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Finished audit of impersonation. Both identifiers are kept on each entry.
  * A deployment that must ship the same entries elsewhere replaces this class.
  */
-public final class InMemoryAuditLog implements AuditPort {
+public final class InMemoryAuditLogImpl implements AuditPort {
 
     private final List<AuditEntry> entries = new CopyOnWriteArrayList<>();
 

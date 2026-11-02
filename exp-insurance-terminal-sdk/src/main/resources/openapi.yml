@@ -1,234 +1,782 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: Insurance staff terminal
-  version: 26.10.6
+  title: exp-insurance-terminal API
+  description: exp-insurance-terminal API Documentation
+  contact:
+    name: Development Team
+    url: https://getfirefly.io
+    email: developers@getfirefly.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: 1.0.0
+servers:
+- url: ""
+  description: Generated server url
+tags:
+- name: StaffUnderwriting
+  description: "Staff referral creation, independent approval, decision and original-action\
+    \ recovery through the Core owner."
 paths:
-  /api/v1/staff/sessions:
-    post:
-      tags: [Staff Terminal]
-      operationId: signIn
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignInRequest"
-      responses:
-        "200":
-          description: Staff session
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StaffSession"
-  /api/v1/staff/records/{area}:
-    get:
-      tags: [Staff Terminal]
-      operationId: listRecords
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - name: area
-          in: path
-          required: true
-          schema: {type: string}
-      responses:
-        "200":
-          description: Records in the area
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/StaffRecord"
   /api/v1/staff/records/{area}/{recordId}:
     get:
-      tags: [Staff Terminal]
+      tags:
+      - Staff Terminal
       operationId: openRecord
       parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - $ref: "#/components/parameters/Area"
-        - $ref: "#/components/parameters/RecordId"
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         "200":
-          description: One record
+          description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: "#/components/schemas/StaffRecord"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
     put:
-      tags: [Staff Terminal]
+      tags:
+      - Staff Terminal
       operationId: updateRecord
       parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - $ref: "#/components/parameters/Area"
-        - $ref: "#/components/parameters/RecordId"
-      requestBody:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
         required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/RecordBody"
+        required: true
       responses:
         "200":
-          description: Updated record
+          description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: "#/components/schemas/StaffRecord"
-  /api/v1/staff/records/{area}/{recordId}/close:
-    post:
-      tags: [Staff Terminal]
-      operationId: closeRecord
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - $ref: "#/components/parameters/Area"
-        - $ref: "#/components/parameters/RecordId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RecordBody"
-      responses:
-        "200":
-          description: Closed record
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StaffRecord"
-  /api/v1/staff/records/{area}/{recordId}/remove:
-    post:
-      tags: [Staff Terminal]
-      operationId: removeDraft
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - $ref: "#/components/parameters/Area"
-        - $ref: "#/components/parameters/RecordId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RecordBody"
-      responses:
-        "200":
-          description: Draft removed
-  /api/v1/staff/records/{area}/{recordId}/decide:
-    post:
-      tags: [Staff Terminal]
-      operationId: decideRecord
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - $ref: "#/components/parameters/Area"
-        - $ref: "#/components/parameters/RecordId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RecordBody"
-      responses:
-        "200":
-          description: Decision recorded
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StaffRecord"
-  /api/v1/staff/records/{area}/{recordId}/distributor:
-    post:
-      tags: [Staff Terminal]
-      operationId: attachDistributor
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - $ref: "#/components/parameters/Area"
-        - $ref: "#/components/parameters/RecordId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RecordBody"
-      responses:
-        "200":
-          description: Distributor attached
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StaffRecord"
-  /api/v1/staff/distributors:
-    get:
-      tags: [Staff Terminal]
-      operationId: listDistributors
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-      responses:
-        "200":
-          description: Distributors
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/DistributorView"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
   /api/v1/staff/configuration/{key}:
     put:
-      tags: [Staff Terminal]
+      tags:
+      - Staff Terminal
       operationId: putProperty
       parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - name: key
-          in: path
-          required: true
-          schema: {type: string}
-      requestBody:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: key
+        in: path
         required: true
+        schema:
+          type: string
+      requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/PropertyBody"
+        required: true
       responses:
         "200":
-          description: Stored value
+          description: OK
           content:
-            text/plain:
+            '*/*':
               schema:
                 type: string
-  /api/v1/staff/masters/{type}:
-    get:
-      tags: [Staff Terminal]
-      operationId: listMasters
-      parameters:
-        - $ref: "#/components/parameters/ActorId"
-        - name: type
-          in: path
-          required: true
-          schema: {type: string}
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/underwriting/intents:
+    post:
+      tags:
+      - StaffUnderwriting
+      summary: Prepare an original staff operation without mutating business data
+      operationId: prepareStaffUnderwritingIntent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GovernedUnderwritingIntent"
+        required: true
       responses:
         "200":
-          description: Master rows
+          description: OK
           content:
             application/json:
+              schema:
+                $ref: "#/components/schemas/GovernedUnderwritingPreparedIntent"
+      security:
+      - staffUnderwritingBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/underwriting/actions:
+    post:
+      tags:
+      - StaffUnderwriting
+      summary: Execute the exact prepared owner action once
+      operationId: executeStaffUnderwritingAction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GovernedUnderwritingCommandRequest"
+        required: true
+      responses:
+        "200":
+          description: "Original owner result: committed or refused"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernedUnderwritingCommandResponse"
+        "503":
+          description: "Known commit with unavailable receipt, uncertain outcome or\
+            \ pre-dispatch platform failure. Keep the original action for recovery."
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/GovernedUnderwritingCommandResponse"
+                - $ref: "#/components/schemas/ErrorResponse"
+                - $ref: "#/components/schemas/ProblemDetail"
+      security:
+      - staffUnderwritingBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/sessions:
+    post:
+      tags:
+      - Staff Terminal
+      operationId: signIn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StaffSession"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/records/{area}/{recordId}/remove:
+    post:
+      tags:
+      - Staff Terminal
+      operationId: removeDraft
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/records/{area}/{recordId}/distributor:
+    post:
+      tags:
+      - Staff Terminal
+      operationId: attachDistributor
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/records/{area}/{recordId}/decide:
+    post:
+      tags:
+      - Staff Terminal
+      operationId: decideRecord
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/records/{area}/{recordId}/close:
+    post:
+      tags:
+      - Staff Terminal
+      operationId: closeRecord
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordBody"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StaffRecord"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/underwriting/actions/{actionId}:
+    get:
+      tags:
+      - StaffUnderwriting
+      summary: Read the original action without repeating the mutation
+      operationId: recoverStaffUnderwritingAction
+      parameters:
+      - name: actionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: intentDigest
+        in: query
+        required: true
+        schema:
+          type: string
+          pattern: "[0-9a-f]{64}"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernedUnderwritingRecovery"
+      security:
+      - staffUnderwritingBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/records/{area}:
+    get:
+      tags:
+      - Staff Terminal
+      operationId: listRecords
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: area
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffRecord"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/masters/{type}:
+    get:
+      tags:
+      - Staff Terminal
+      operationId: listMasters
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/MasterRecord"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
+  /api/v1/staff/distributors:
+    get:
+      tags:
+      - Staff Terminal
+      operationId: listDistributors
+      parameters:
+      - name: X-Actor-Id
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DistributorView"
+      security:
+      - staffBearer: []
+      x-disable-idempotency: true
 components:
-  parameters:
-    ActorId:
-      name: X-Actor-Id
-      in: header
-      required: true
-      schema: {type: string, format: uuid}
-    Area:
-      name: area
-      in: path
-      required: true
-      schema: {type: string}
-    RecordId:
-      name: recordId
-      in: path
-      required: true
-      schema: {type: string, format: uuid}
   schemas:
+    RecordBody:
+      type: object
+      properties:
+        customerPartyId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+        note:
+          type: string
+        distributorId:
+          type: string
+          format: uuid
+        collaboratorId:
+          type: string
+          format: uuid
+        channel:
+          type: string
+        decision:
+          type: string
+    StaffRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        area:
+          type: string
+        customerPartyId:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        reference:
+          type: string
+        distributorId:
+          type: string
+          format: uuid
+        note:
+          type: string
+    PropertyBody:
+      type: object
+      properties:
+        value:
+          type: string
+    GovernedUnderwritingIntent:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum:
+          - REFERRAL_CREATE
+          - REFERRAL_APPROVE
+          - DECISION_RECORD
+        actionId:
+          type: string
+          format: uuid
+        submissionId:
+          type: string
+          format: uuid
+        riskId:
+          type: string
+          format: uuid
+        referralId:
+          type:
+          - string
+          - "null"
+          format: uuid
+        expectedReferralVersion:
+          type: integer
+          format: int64
+        expectedReceiptDigest:
+          type:
+          - string
+          - "null"
+        reason:
+          type:
+          - string
+          - "null"
+      required:
+      - actionId
+      - expectedReferralVersion
+      - operation
+      - riskId
+      - submissionId
+    GovernedUnderwritingPreparedIntent:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum:
+          - REFERRAL_CREATE
+          - REFERRAL_APPROVE
+          - DECISION_RECORD
+        actionId:
+          type: string
+          format: uuid
+        intentDigest:
+          type: string
+      required:
+      - actionId
+      - intentDigest
+      - operation
+    GovernedUnderwritingCommandRequest:
+      type: object
+      properties:
+        intent:
+          $ref: "#/components/schemas/GovernedUnderwritingIntent"
+        originalIntentDigest:
+          type: string
+      required:
+      - intent
+      - originalIntentDigest
+    GovernedUnderwritingCommandResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - COMMITTED
+          - COMMITTED_RESPONSE_UNAVAILABLE
+          - OUTCOME_UNKNOWN
+          - REFUSED
+        actionId:
+          type: string
+          format: uuid
+        intentDigest:
+          type: string
+        receipt:
+          $ref: "#/components/schemas/GovernedUnderwritingReceipt"
+      required:
+      - actionId
+      - intentDigest
+      - status
+    GovernedUnderwritingReceipt:
+      type: object
+      properties:
+        actionId:
+          type: string
+          format: uuid
+        intentDigest:
+          type: string
+        operation:
+          type: string
+          enum:
+          - REFERRAL_CREATE
+          - REFERRAL_APPROVE
+          - DECISION_RECORD
+        referralId:
+          type: string
+          format: uuid
+        referralVersion:
+          type: integer
+          format: int64
+        decisionId:
+          type:
+          - string
+          - "null"
+          format: uuid
+        receiptDigest:
+          type: string
+      required:
+      - actionId
+      - intentDigest
+      - operation
+      - receiptDigest
+      - referralId
+      - referralVersion
+    CircuitBreakerInfo:
+      type: object
+      properties:
+        state:
+          type: string
+        name:
+          type: string
+        failureRate:
+          type: number
+          format: double
+        failureRateThreshold:
+          type: number
+          format: double
+        failureCount:
+          type: integer
+          format: int32
+        nextAttemptTime:
+          type: integer
+          format: int64
+        fallbackSuggestion:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        path:
+          type: string
+        traceId:
+          type: string
+        spanId:
+          type: string
+        correlationId:
+          type: string
+        requestId:
+          type: string
+        details:
+          type: string
+        suggestion:
+          type: string
+        documentation:
+          type: string
+        helpUrl:
+          type: string
+        instance:
+          type: string
+        category:
+          type: string
+          enum:
+          - VALIDATION
+          - BUSINESS
+          - TECHNICAL
+          - SECURITY
+          - EXTERNAL
+          - RESOURCE
+          - RATE_LIMIT
+          - CIRCUIT_BREAKER
+          - UNKNOWN
+        severity:
+          type: string
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+          - CRITICAL
+        retryable:
+          type: boolean
+        rateLimitInfo:
+          $ref: "#/components/schemas/RateLimitInfo"
+        circuitBreakerInfo:
+          $ref: "#/components/schemas/CircuitBreakerInfo"
+        metadata:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationError"
+        stackTrace:
+          type: string
+        debugInfo:
+          type: object
+          additionalProperties: {}
+        retry_after:
+          type: integer
+          format: int32
+    RateLimitInfo:
+      type: object
+      properties:
+        limit:
+          type: integer
+          format: int32
+        remaining:
+          type: integer
+          format: int32
+        resetTime:
+          type: integer
+          format: int64
+        windowSeconds:
+          type: integer
+          format: int32
+        limitType:
+          type: string
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: {}
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        extensions:
+          type: object
+          additionalProperties: {}
     SignInRequest:
       type: object
       properties:
@@ -242,45 +790,65 @@ components:
           format: uuid
         provider:
           type: string
-    StaffRecord:
+    GovernedUnderwritingRecovery:
       type: object
       properties:
-        id: {type: string, format: uuid}
-        area: {type: string}
-        customerPartyId: {type: string, format: uuid}
-        actorId: {type: string, format: uuid}
-        status: {type: string}
-        reference: {type: string}
-        distributorId: {type: string, format: uuid}
-        note: {type: string}
-    RecordBody:
-      type: object
-      properties:
-        customerPartyId: {type: string, format: uuid}
-        reason: {type: string}
-        note: {type: string}
-        distributorId: {type: string, format: uuid}
-        collaboratorId: {type: string, format: uuid}
-        channel: {type: string}
-        decision: {type: string}
-    DistributorView:
-      type: object
-      properties:
-        distributorId: {type: string, format: uuid}
-        name: {type: string}
-        role: {type: string}
-        partyId: {type: string, format: uuid}
-        channel: {type: string}
-        agencyId: {type: string, format: uuid}
-        collaboratorId: {type: string, format: uuid}
+        state:
+          type: string
+          enum:
+          - FOUND
+          - NOT_OBSERVED_AT_THIS_READ
+          - INTENT_CONFLICT
+        actionId:
+          type: string
+          format: uuid
+        intentDigest:
+          type: string
+        receipt:
+          $ref: "#/components/schemas/GovernedUnderwritingReceipt"
+      required:
+      - actionId
+      - intentDigest
+      - state
     MasterRecord:
       type: object
       properties:
-        type: {type: string}
-        id: {type: string, format: uuid}
-        code: {type: string}
-        name: {type: string}
-    PropertyBody:
+        type:
+          type: string
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+    DistributorView:
       type: object
       properties:
-        value: {type: string}
+        distributorId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          type: string
+        partyId:
+          type: string
+          format: uuid
+        channel:
+          type: string
+        agencyId:
+          type: string
+          format: uuid
+        collaboratorId:
+          type: string
+          format: uuid
+  securitySchemes:
+    staffBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    staffUnderwritingBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
